@@ -14,16 +14,18 @@ export function generateStaticParams() {
   ];
 }
 
-export default function ProductPage({
+export default async function ProductPage({
   params,
 }: {
-  params: { id: string; productId: string };
+  params: Promise<{ id: string; productId: string }>;
 }) {
+  const { productId } = await params;
+
   return (
     <div className="min-h-screen">
       <Sidebar />
       <div className="pl-[116px]">
-        <ProductDetail productId={params.productId} />
+        <ProductDetail productId={productId} />
       </div>
     </div>
   );
