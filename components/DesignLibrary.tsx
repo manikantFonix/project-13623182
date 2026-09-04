@@ -126,7 +126,6 @@ export default function DesignLibrary({ state, onRetry }: Props) {
     updateScroll();
     window.addEventListener('resize', updateScroll);
     return () => window.removeEventListener('resize', updateScroll);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, collapsed, query]);
 
   const scrollBy = (dir: 'left' | 'right') => {
