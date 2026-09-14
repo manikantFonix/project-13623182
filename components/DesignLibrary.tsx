@@ -1,103 +1,115 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 
 export interface DesignItem {
   id: string;
+  requestId: string;
   title: string;
   meta: string;
   time: string;
-  status: 'Approved' | 'Sent to customer' | 'In production' | 'Draft';
+  status: 'Approved' | 'Sent to customer' | 'In production' | 'Draft' | 'Completed';
   image: string;
 }
 
 const DESIGNS: DesignItem[] = [
   {
-    id: '1',
+    id: 'd1',
+    requestId: 'r7',
     title: 'Custom engagement ring',
-    meta: 'Sarah Mitchell · REQ-123',
+    meta: 'Sophia Reed · REQ-127',
     time: '2 hours ago',
     status: 'Approved',
     image:
-      'https://readdy.ai/api/search-image?query=Professional%20product%20photograph%20of%20a%20custom%20solitaire%20engagement%20ring%20with%20a%20round%20brilliant%20diamond%20in%20a%20six%20prong%20setting%2C%20on%20a%20plain%20pale%20off-white%20studio%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewellery%20shot%2C%20portrait%20composition&width=600&height=800&seq=31&orientation=portrait',
+      'https://readdy.ai/api/search-image?query=Professional%20product%20photograph%20of%20a%20custom%20solitaire%20engagement%20ring%20with%20a%20round%20brilliant%20diamond%20in%20a%20six%20prong%20setting%2C%20on%20a%20plain%20pale%20off-white%20studio%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewelry%20shot%2C%20portrait%20composition&width=600&height=800&seq=31&orientation=portrait',
   },
   {
-    id: '2',
+    id: 'd2',
+    requestId: 'r5',
     title: 'Drop earrings, filigree',
-    meta: 'Priya Nair · REQ-118',
+    meta: 'Mia Taylor · REQ-121',
     time: '5 hours ago',
     status: 'Sent to customer',
     image:
-      'https://readdy.ai/api/search-image?query=Professional%20product%20photograph%20of%20an%20ornate%20gold%20drop%20earring%20with%20intricate%20filigree%20detail%2C%20on%20a%20plain%20pale%20off-white%20studio%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewellery%20shot%2C%20portrait%20composition&width=600&height=800&seq=32&orientation=portrait',
+      'https://readdy.ai/api/search-image?query=Professional%20product%20photograph%20of%20an%20ornate%20gold%20drop%20earring%20with%20intricate%20filigree%20detail%2C%20on%20a%20plain%20pale%20off-white%20studio%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewelry%20shot%2C%20portrait%20composition&width=600&height=800&seq=32&orientation=portrait',
   },
   {
-    id: '3',
-    title: 'Halo ring, oval centre',
-    meta: 'Sarah Mitchell · REQ-115',
+    id: 'd3',
+    requestId: 'r12',
+    title: 'Halo ring, oval center',
+    meta: 'Hana Kim · REQ-130',
     time: 'Yesterday',
     status: 'In production',
     image:
-      'https://readdy.ai/api/search-image?query=Professional%20product%20photograph%20of%20a%20gold%20halo%20ring%20with%20an%20oval%20diamond%20centre%20framed%20by%20a%20circle%20of%20small%20stones%2C%20on%20a%20plain%20pale%20off-white%20studio%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewellery%20shot%2C%20portrait%20composition&width=600&height=800&seq=33&orientation=portrait',
+      'https://readdy.ai/api/search-image?query=Professional%20product%20photograph%20of%20a%20gold%20halo%20ring%20with%20an%20oval%20diamond%20center%20framed%20by%20a%20circle%20of%20small%20stones%2C%20on%20a%20plain%20pale%20off-white%20studio%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewelry%20shot%2C%20portrait%20composition&width=600&height=800&seq=33&orientation=portrait',
   },
   {
-    id: '4',
+    id: 'd4',
+    requestId: 'r1',
     title: 'Anniversary band',
-    meta: 'Marcus Webb · REQ-109',
+    meta: 'JCX-102 · REQ-101',
     time: '2 days ago',
     status: 'Draft',
     image:
-      'https://readdy.ai/api/search-image?query=Professional%20product%20photograph%20of%20a%20polished%20gold%20band%20ring%20with%20a%20row%20of%20small%20diamonds%20set%20along%20the%20top%20surface%2C%20on%20a%20plain%20pale%20off-white%20studio%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewellery%20shot%2C%20portrait%20composition&width=600&height=800&seq=34&orientation=portrait',
+      'https://readdy.ai/api/search-image?query=Professional%20product%20photograph%20of%20a%20polished%20gold%20band%20ring%20with%20a%20row%20of%20small%20diamonds%20set%20along%20the%20top%20surface%2C%20on%20a%20plain%20pale%20off-white%20studio%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewelry%20shot%2C%20portrait%20composition&width=600&height=800&seq=34&orientation=portrait',
   },
   {
-    id: '5',
+    id: 'd5',
+    requestId: 'r6',
     title: 'Emerald tennis bracelet',
-    meta: 'Priya Nair · REQ-141',
+    meta: 'Ava Clarke · REQ-124',
     time: '3 hours ago',
-    status: 'In production',
-    image:
-      'https://readdy.ai/api/search-image?query=Professional%20product%20photograph%20of%20a%20delicate%20tennis%20bracelet%20set%20with%20a%20line%20of%20round%20emeralds%20and%20small%20diamonds%20on%20white%20gold%2C%20on%20a%20plain%20pale%20off-white%20studio%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewellery%20shot%2C%20portrait%20composition&width=600&height=800&seq=35&orientation=portrait',
-  },
-  {
-    id: '6',
-    title: 'Pearl drop necklace',
-    meta: 'Amara Khan · REQ-138',
-    time: '6 hours ago',
-    status: 'Approved',
-    image:
-      'https://readdy.ai/api/search-image?query=Professional%20product%20photograph%20of%20an%20elegant%20pearl%20pendant%20necklace%20with%20a%20single%20large%20pearl%20drop%20on%20a%20fine%20chain%2C%20on%20a%20plain%20pale%20off-white%20studio%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewellery%20shot%2C%20portrait%20composition&width=600&height=800&seq=36&orientation=portrait',
-  },
-  {
-    id: '7',
-    title: 'Sapphire cluster studs',
-    meta: 'Marcus Webb · REQ-132',
-    time: 'Yesterday',
     status: 'Sent to customer',
     image:
-      'https://readdy.ai/api/search-image?query=Professional%20product%20photograph%20of%20a%20pair%20of%20stud%20earrings%20with%20a%20cluster%20of%20round%20blue%20sapphires%20set%20in%20white%20gold%2C%20on%20a%20plain%20pale%20off-white%20studio%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewellery%20shot%2C%20portrait%20composition&width=600&height=800&seq=37&orientation=portrait',
+      'https://readdy.ai/api/search-image?query=Professional%20product%20photograph%20of%20a%20delicate%20tennis%20bracelet%20set%20with%20a%20line%20of%20round%20emeralds%20and%20small%20diamonds%20on%20white%20gold%2C%20on%20a%20plain%20pale%20off-white%20studio%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewelry%20shot%2C%20portrait%20composition&width=600&height=800&seq=35&orientation=portrait',
   },
   {
-    id: '8',
+    id: 'd6',
+    requestId: 'r10',
+    title: 'Pearl drop necklace',
+    meta: 'Liam Foster · REQ-133',
+    time: '6 hours ago',
+    status: 'Completed',
+    image:
+      'https://readdy.ai/api/search-image?query=Professional%20product%20photograph%20of%20an%20elegant%20pearl%20pendant%20necklace%20with%20a%20single%20large%20pearl%20drop%20on%20a%20fine%20chain%2C%20on%20a%20plain%20pale%20off-white%20studio%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewelry%20shot%2C%20portrait%20composition&width=600&height=800&seq=36&orientation=portrait',
+  },
+  {
+    id: 'd7',
+    requestId: 'r3',
+    title: 'Sapphire cluster studs',
+    meta: 'JCX-115 · REQ-115',
+    time: 'Yesterday',
+    status: 'Draft',
+    image:
+      'https://readdy.ai/api/search-image?query=Professional%20product%20photograph%20of%20a%20pair%20of%20stud%20earrings%20with%20a%20cluster%20of%20round%20blue%20sapphires%20set%20in%20white%20gold%2C%20on%20a%20plain%20pale%20off-white%20studio%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewelry%20shot%2C%20portrait%20composition&width=600&height=800&seq=37&orientation=portrait',
+  },
+  {
+    id: 'd8',
+    requestId: 'r2',
     title: 'Twist bangle, rose gold',
-    meta: 'Amara Khan · REQ-127',
+    meta: 'Elena Marchetti · REQ-108',
     time: '3 days ago',
     status: 'Draft',
     image:
-      'https://readdy.ai/api/search-image?query=Professional%20product%20photograph%20of%20a%20rose%20gold%20bangle%20bracelet%20with%20a%20twisted%20rope%20texture%2C%20on%20a%20plain%20pale%20off-white%20studio%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewellery%20shot%2C%20portrait%20composition&width=600&height=800&seq=38&orientation=portrait',
+      'https://readdy.ai/api/search-image?query=Professional%20product%20photograph%20of%20a%20rose%20gold%20bangle%20bracelet%20with%20a%20twisted%20rope%20texture%2C%20on%20a%20plain%20pale%20off-white%20studio%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewelry%20shot%2C%20portrait%20composition&width=600&height=800&seq=38&orientation=portrait',
   },
 ];
 
 const statusPill: Record<DesignItem['status'], string> = {
-  Approved: 'text-[#3D6B54]',
-  'Sent to customer': 'text-[#5C6870]',
-  'In production': 'text-[#3D6B54]',
-  Draft: 'text-[#5C6870]',
+  Approved: 'text-[var(--success)]',
+  Completed: 'text-[var(--success)]',
+  'Sent to customer': 'text-[var(--text-sec)]',
+  'In production': 'text-[var(--text-sec)]',
+  Draft: 'text-[var(--text-sec)]',
 };
 
 const chipClass: Record<DesignItem['status'], string> = {
-  Approved: 'bg-[#E8F1EC]',
-  'Sent to customer': 'bg-white',
-  'In production': 'bg-[#E8F1EC]',
-  Draft: 'bg-[#EFF2F3]',
+  Approved: 'bg-[var(--success-bg)]',
+  Completed: 'bg-[var(--success-bg)]',
+  'Sent to customer': 'bg-[var(--muted)]',
+  'In production': 'bg-[var(--muted)]',
+  Draft: 'bg-[var(--muted)]',
 };
 
 export type LibraryState = 'ready' | 'empty' | 'loading' | 'error';
@@ -126,6 +138,7 @@ export default function DesignLibrary({ state, onRetry }: Props) {
     updateScroll();
     window.addEventListener('resize', updateScroll);
     return () => window.removeEventListener('resize', updateScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, collapsed, query]);
 
   const scrollBy = (dir: 'left' | 'right') => {
@@ -141,19 +154,20 @@ export default function DesignLibrary({ state, onRetry }: Props) {
   );
 
   const placeholderCard = (
-    <div className="w-[216px] shrink-0 rounded-[12px] overflow-hidden bg-white border border-[#DDE3E6]">
-      <div className="h-[224px] bg-[#E8ECEE]" />
+    <div className="w-[216px] shrink-0 rounded-[12px] overflow-hidden bg-[var(--surface)] border border-[var(--border)]">
+      <div className="h-[224px] bg-[var(--muted)]" />
       <div className="p-3.5 space-y-2">
-        <div className="h-4 w-2/3 rounded-full bg-[#E8ECEE]" />
-        <div className="h-3 w-1/2 rounded-full bg-[#E8ECEE]" />
+        <div className="h-4 w-2/3 rounded-full bg-[var(--muted)]" />
+        <div className="h-3 w-1/2 rounded-full bg-[var(--muted)]" />
       </div>
     </div>
   );
 
   const card = (d: DesignItem) => (
-    <article
+    <Link
       key={d.id}
-      className="group relative w-[216px] shrink-0 rounded-[12px] overflow-hidden bg-white transition-shadow duration-150 hover:shadow-[0_14px_28px_-12px_rgba(19,26,31,0.28)]"
+      href={`/requests/${d.requestId}`}
+      className="group relative w-[216px] shrink-0 rounded-[12px] overflow-hidden bg-[var(--surface)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--canvas)]"
     >
       <div className="h-[224px] overflow-hidden">
         <img
@@ -167,12 +181,12 @@ export default function DesignLibrary({ state, onRetry }: Props) {
       >
         {d.status}
       </span>
-      <div className="bg-white p-3.5">
-        <h3 className="text-[14px] font-medium text-[#131A1F] truncate">{d.title}</h3>
-        <p className="mt-1 text-[12px] text-[#5C6870] truncate tabular-nums">{d.meta}</p>
-        <p className="mt-0.5 text-[12px] text-[#5C6870] tabular-nums">{d.time}</p>
+      <div className="bg-[var(--surface)] p-3.5">
+        <h3 className="text-[14px] font-medium text-[var(--text)] truncate">{d.title}</h3>
+        <p className="mt-1 text-[12px] text-[var(--text-sec)] truncate tabular-nums">{d.meta}</p>
+        <p className="mt-0.5 text-[12px] text-[var(--text-sec)] tabular-nums">{d.time}</p>
       </div>
-    </article>
+    </Link>
   );
 
   const scrollBtn = (dir: 'left' | 'right') => (
@@ -180,7 +194,7 @@ export default function DesignLibrary({ state, onRetry }: Props) {
       type="button"
       aria-label={dir === 'left' ? 'Scroll designs left' : 'Scroll designs right'}
       onClick={() => scrollBy(dir)}
-      className="absolute top-1/2 -translate-y-1/2 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-white border border-[#DDE3E6] text-[#131A1F] shadow-[0_6px_16px_-6px_rgba(19,26,31,0.3)] hover:bg-[#F4F6F7] transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16323F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#EFF2F3]"
+      className="absolute top-1/2 -translate-y-1/2 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] hover:bg-[var(--muted)] transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--canvas)]"
       style={{ [dir === 'left' ? 'left' : 'right']: '-14px' }}
     >
       <i className={`${dir === 'left' ? 'ri-arrow-left-s-line' : 'ri-arrow-right-s-line'} text-[20px]`} />
@@ -191,23 +205,23 @@ export default function DesignLibrary({ state, onRetry }: Props) {
     <section>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-[15px] font-semibold text-[#131A1F]">Design library</h2>
+          <h2 className="text-[15px] font-semibold text-[var(--text)]">Design library</h2>
           <button
             type="button"
             aria-label={collapsed ? 'Expand design library' : 'Collapse design library'}
             onClick={() => setCollapsed((c) => !c)}
-            className="w-7 h-7 flex items-center justify-center rounded-full text-[#5C6870] hover:text-[#131A1F] hover:bg-[#F4F6F7] transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16323F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#EFF2F3]"
+            className="w-7 h-7 flex items-center justify-center rounded-full text-[var(--text-sec)] hover:text-[var(--text)] hover:bg-[var(--muted)] transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--canvas)]"
           >
             <i className={`ri-arrow-down-s-line text-[20px] ${collapsed ? 'rotate-0' : 'rotate-180'}`} />
           </button>
         </div>
         <div className="relative">
-          <i className="ri-search-line text-[20px] text-[#5C6870] absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <i className="ri-search-line text-[20px] text-[var(--text-sec)] absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by name or request"
-            className="w-[280px] h-10 pl-11 pr-4 text-sm text-[#131A1F] placeholder-[#5C6870] bg-white border border-[#DDE3E6] rounded-full outline-none focus:border-[#16323F] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16323F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#EFF2F3]"
+            className="w-[280px] h-10 pl-11 pr-4 text-[13px] text-[var(--text)] placeholder-[var(--text-sec)] bg-[var(--surface)] border border-[var(--border)] rounded-full outline-none focus:border-[var(--accent)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--canvas)]"
           />
         </div>
       </div>
@@ -225,11 +239,11 @@ export default function DesignLibrary({ state, onRetry }: Props) {
 
           {state === 'error' && (
             <div className="flex flex-col items-center justify-center text-center min-h-[280px] space-y-4">
-              <p className="text-sm text-[#131A1F]">We couldn't load your designs.</p>
+              <p className="text-[13px] text-[var(--text)]">We couldn't load your designs.</p>
               <button
                 type="button"
                 onClick={onRetry}
-                className="h-10 px-4 text-[13px] font-medium text-[#131A1F] bg-white border border-[#DDE3E6] rounded-full hover:bg-[#F4F6F7] transition-colors duration-150 whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16323F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#EFF2F3]"
+                className="h-10 px-4 text-[13px] font-medium text-[var(--text)] bg-[var(--surface)] border border-[var(--border)] rounded-full hover:bg-[var(--muted)] transition-colors duration-150 whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--canvas)]"
               >
                 Try again
               </button>
@@ -238,7 +252,7 @@ export default function DesignLibrary({ state, onRetry }: Props) {
 
           {state === 'empty' && (
             <div className="flex items-center justify-center text-center min-h-[280px]">
-              <p className="text-sm text-[#131A1F] max-w-[360px]">
+              <p className="text-[13px] text-[var(--text)] max-w-[360px]">
                 Nothing here yet. Describe a piece above and generate your first
                 design.
               </p>
@@ -249,7 +263,7 @@ export default function DesignLibrary({ state, onRetry }: Props) {
             <div className="relative pr-8">
               {filtered.length === 0 ? (
                 <div className="flex items-center justify-center min-h-[280px]">
-                  <p className="text-sm text-[#5C6870]">No designs match your search.</p>
+                  <p className="text-[13px] text-[var(--text-sec)]">No designs match your search.</p>
                 </div>
               ) : (
                 <>
@@ -273,9 +287,9 @@ export default function DesignLibrary({ state, onRetry }: Props) {
         .lib-scroll { scrollbar-width: thin; scrollbar-color: transparent transparent; }
         .lib-scroll::-webkit-scrollbar { height: 6px; }
         .lib-scroll::-webkit-scrollbar-track { background: transparent; }
-        .lib-scroll::-webkit-scrollbar-thumb { background: #DDE3E6; border-radius: 9999px; }
-        .lib-scroll:hover { scrollbar-color: #DDE3E6 transparent; }
-        .lib-scroll::-webkit-scrollbar-thumb:hover { background: #C3CCD1; }
+        .lib-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 9999px; }
+        .lib-scroll:hover { scrollbar-color: var(--border) transparent; }
+        .lib-scroll::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
         .lib-scroll::-webkit-scrollbar-thumb { opacity: 0; }
         .lib-scroll:hover::-webkit-scrollbar-thumb { opacity: 1; }
       `}</style>

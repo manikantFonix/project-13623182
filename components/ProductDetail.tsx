@@ -2,13 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { METAL_LIST } from '../lib/metals';
 import DeleteDialog from './DeleteDialog';
+import StateSwitcherPanel from './ui/StateSwitcherPanel';
 
 export type DetailDemo =
   | 'default'
   | 'roseGold'
   | 'edited'
   | 'incomplete'
+  | 'unresolved'
   | 'saving'
   | 'saveError'
   | 'hidden';
@@ -22,6 +25,7 @@ const demos: DetailDemo[] = [
   'roseGold',
   'edited',
   'incomplete',
+  'unresolved',
   'saving',
   'saveError',
   'hidden',
@@ -32,6 +36,7 @@ const demoLabel: Record<DetailDemo, string> = {
   roseGold: 'Rose gold',
   edited: 'Edited',
   incomplete: 'Inc. renders',
+  unresolved: 'Unresolved',
   saving: 'Saving',
   saveError: 'Save error',
   hidden: 'Hidden',
@@ -39,67 +44,73 @@ const demoLabel: Record<DetailDemo, string> = {
 
 const VIEWS = ['Front', 'Side', 'Back', 'Worn'] as const;
 
-const VIEW_IMG: Record<string, Record<(typeof VIEWS)[number], string>> = {
+const VIEW_IMG: Record<string, Record<string, string>> = {
   yellow: {
     Front:
-      'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20yellow%20gold%20solitaire%20engagement%20ring%20with%20a%20six%20prong%20setting%20and%20brilliant%20cut%20diamond%20shot%20from%20the%20front%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewellery%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=440&height=440&seq=41&orientation=squarish',
+      'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20yellow%20gold%20solitaire%20engagement%20ring%20with%20a%20six%20prong%20setting%20and%20brilliant%20cut%20diamond%20shot%20from%20the%20front%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewelry%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=440&height=440&seq=41&orientation=squarish',
     Side:
-      'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20yellow%20gold%20solitaire%20engagement%20ring%20side%20profile%20view%20showing%20the%20tapered%20band%20and%20raised%20six%20prong%20setting%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewellery%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=440&height=440&seq=42&orientation=squarish',
+      'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20yellow%20gold%20solitaire%20engagement%20ring%20side%20profile%20view%20showing%20the%20tapered%20band%20and%20raised%20six%20prong%20setting%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewelry%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=440&height=440&seq=42&orientation=squarish',
     Back:
-      'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20yellow%20gold%20solitaire%20engagement%20ring%20back%20view%20showing%20the%20smooth%20tapered%20band%20and%20gallery%20beneath%20the%20diamond%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewellery%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=440&height=440&seq=43&orientation=squarish',
+      'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20yellow%20gold%20solitaire%20engagement%20ring%20back%20view%20showing%20the%20smooth%20tapered%20band%20and%20gallery%20beneath%20the%20diamond%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewelry%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=440&height=440&seq=43&orientation=squarish',
     Worn:
-      'https://readdy.ai/api/search-image?query=Elegant%20fashion%20photograph%20of%20a%20yellow%20gold%20solitaire%20engagement%20ring%20worn%20on%20a%20woman%20hand%20wrist%20resting%20on%20a%20clean%20pale%20surface%2C%20soft%20natural%20lighting%2C%20warm%20muted%20palette%2C%20luxury%20jewellery%20on%20model%2C%20refined%20editorial%20composition&width=440&height=440&seq=44&orientation=squarish',
+      'https://readdy.ai/api/search-image?query=Elegant%20fashion%20photograph%20of%20a%20yellow%20gold%20solitaire%20engagement%20ring%20worn%20on%20a%20woman%20hand%20wrist%20resting%20on%20a%20clean%20pale%20surface%2C%20soft%20natural%20lighting%2C%20warm%20muted%20palette%2C%20luxury%20jewelry%20on%20model%2C%20refined%20editorial%20composition&width=440&height=440&seq=44&orientation=squarish',
   },
   rose: {
     Front:
-      'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20rose%20gold%20solitaire%20engagement%20ring%20with%20a%20six%20prong%20setting%20and%20brilliant%20cut%20diamond%20shot%20from%20the%20front%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewellery%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=440&height=440&seq=45&orientation=squarish',
+      'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20rose%20gold%20solitaire%20engagement%20ring%20with%20a%20six%20prong%20setting%20and%20brilliant%20cut%20diamond%20shot%20from%20the%20front%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewelry%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=440&height=440&seq=45&orientation=squarish',
     Side:
-      'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20rose%20gold%20solitaire%20engagement%20ring%20side%20profile%20view%20showing%20the%20tapered%20band%20and%20raised%20six%20prong%20setting%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewellery%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=440&height=440&seq=46&orientation=squarish',
+      'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20rose%20gold%20solitaire%20engagement%20ring%20side%20profile%20view%20showing%20the%20tapered%20band%20and%20raised%20six%20prong%20setting%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewelry%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=440&height=440&seq=46&orientation=squarish',
     Back:
-      'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20rose%20gold%20solitaire%20engagement%20ring%20back%20view%20showing%20the%20smooth%20tapered%20band%20and%20gallery%20beneath%20the%20diamond%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewellery%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=440&height=440&seq=47&orientation=squarish',
+      'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20rose%20gold%20solitaire%20engagement%20ring%20back%20view%20showing%20the%20smooth%20tapered%20band%20and%20gallery%20beneath%20the%20diamond%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20diffused%20lighting%2C%20minimalist%20luxury%20jewelry%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=440&height=440&seq=47&orientation=squarish',
     Worn:
-      'https://readdy.ai/api/search-image?query=Elegant%20fashion%20photograph%20of%20a%20rose%20gold%20solitaire%20engagement%20ring%20worn%20on%20a%20woman%20hand%20wrist%20resting%20on%20a%20clean%20pale%20surface%2C%20soft%20natural%20lighting%2C%20warm%20muted%20palette%2C%20luxury%20jewellery%20on%20model%2C%20refined%20editorial%20composition&width=440&height=440&seq=48&orientation=squarish',
+      'https://readdy.ai/api/search-image?query=Elegant%20fashion%20photograph%20of%20a%20rose%20gold%20solitaire%20engagement%20ring%20worn%20on%20a%20woman%20hand%20wrist%20resting%20on%20a%20clean%20pale%20surface%2C%20soft%20natural%20lighting%2C%20warm%20muted%20palette%2C%20luxury%20jewelry%20on%20model%2C%20refined%20editorial%20composition&width=440&height=440&seq=48&orientation=squarish',
   },
 };
 
 const UPLOADS = [
-  'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20yellow%20gold%20solitaire%20engagement%20ring%20front%20view%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20lighting%2C%20luxury%20jewellery%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=128&height=128&seq=51&orientation=squarish',
-  'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20yellow%20gold%20solitaire%20engagement%20ring%20side%20profile%20view%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20lighting%2C%20luxury%20jewellery%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=128&height=128&seq=52&orientation=squarish',
-  'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20yellow%20gold%20solitaire%20engagement%20ring%20back%20view%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20lighting%2C%20luxury%20jewellery%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=128&height=128&seq=53&orientation=squarish',
+  'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20yellow%20gold%20solitaire%20engagement%20ring%20front%20view%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20lighting%2C%20luxury%20jewelry%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=128&height=128&seq=51&orientation=squarish',
+  'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20yellow%20gold%20solitaire%20engagement%20ring%20side%20profile%20view%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20lighting%2C%20luxury%20jewelry%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=128&height=128&seq=52&orientation=squarish',
+  'https://readdy.ai/api/search-image?query=Professional%20studio%20product%20photograph%20of%20a%20yellow%20gold%20solitaire%20engagement%20ring%20back%20view%2C%20plain%20pale%20off-white%20seamless%20background%2C%20soft%20even%20lighting%2C%20luxury%20jewelry%20product%20shot%2C%20crisp%20focus%2C%20clean%20composition&width=128&height=128&seq=53&orientation=squarish',
 ];
 
-const COLOURS = [
-  { id: 'yellow', name: 'Yellow gold', swatch: '#D9A441' },
-  { id: 'white', name: 'White gold', swatch: '#E7E9EA' },
-  { id: 'rose', name: 'Rose gold', swatch: '#C9908A' },
-];
+const COLORS = METAL_LIST.map((m) => ({ id: m.id, name: m.name, swatch: m.hex }));
 
 const DEFAULT_DESC =
-  'Classic solitaire in a six-prong setting, with a tapered band and a brilliant-cut centre stone.';
+  'Classic solitaire in a six-prong setting, with a tapered band and a brilliant-cut center stone.';
 
 export default function ProductDetail({ productId }: Props) {
   const [demo, setDemo] = useState<DetailDemo>('default');
-  const [colour, setColour] = useState('yellow');
+  const [color, setColor] = useState('yellow');
   const [desc, setDesc] = useState(DEFAULT_DESC);
   const [price, setPrice] = useState('1240');
   const [visible, setVisible] = useState(true);
   const [edited, setEdited] = useState(false);
   const [incomplete, setIncomplete] = useState(false);
+  const [unresolved, setUnresolved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState('');
   const [saveError, setSaveError] = useState(false);
   const [hiddenMsg, setHiddenMsg] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const saveTimer = useRef<ReturnType<typeof setTimeout>>(null);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clearTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+      if (clearTimer.current) clearTimeout(clearTimer.current);
+    };
+  }, []);
 
   const applyDemo = (d: DetailDemo) => {
     setDemo(d);
-    setColour(d === 'roseGold' ? 'rose' : 'yellow');
+    setColor(d === 'roseGold' ? 'rose' : 'yellow');
     setDesc(d === 'edited' ? 'Classic solitaire in a raised six-prong setting, tapered band.' : DEFAULT_DESC);
     setPrice('1240');
     setVisible(d !== 'hidden');
     setEdited(d === 'edited');
     setIncomplete(d === 'incomplete');
+    setUnresolved(d === 'unresolved');
     setSaving(d === 'saving');
     setSaveError(d === 'saveError');
     setHiddenMsg(d === 'hidden');
@@ -117,7 +128,7 @@ export default function ProductDetail({ productId }: Props) {
     saveTimer.current = setTimeout(() => {
       setSaving(false);
       setSavedMsg('Saved');
-      setTimeout(() => setSavedMsg(''), 2000);
+      clearTimer.current = setTimeout(() => setSavedMsg(''), 2000);
     }, 700);
   };
 
@@ -133,11 +144,9 @@ export default function ProductDetail({ productId }: Props) {
   };
 
   const handleVisibility = () => {
-    setVisible((v) => {
-      const next = !v;
-      setHiddenMsg(!next);
-      return next;
-    });
+    const next = !visible;
+    setVisible(next);
+    setHiddenMsg(!next);
     triggerSave();
   };
 
@@ -147,59 +156,59 @@ export default function ProductDetail({ productId }: Props) {
   const SaveState = () => {
     if (saveError)
       return (
-        <p className="mt-1 text-[13px] text-[#A8552A]">
+        <p className="mt-1 text-[13px] text-[var(--alert)]">
           We couldn't save your changes.
         </p>
       );
     if (savedMsg) {
       return (
-        <p className="mt-1 text-[13px] text-[#3D6B54]">{savedMsg}</p>
+        <p className="mt-1 text-[13px] text-[var(--success)]">{savedMsg}</p>
       );
     }
     return null;
   };
 
   return (
-    <main className="min-h-screen bg-[#EFF2F3] pt-8 pb-16">
+    <main className="min-h-screen bg-[var(--canvas)] pt-8 pb-16">
       <div className="max-w-[1180px] mx-auto px-8">
-        <nav className="text-[13px] text-[#5C6870]">
+        <nav className="text-[13px] text-[var(--text-sec)]">
           <Link
             href="/"
-            className="hover:text-[#131A1F] transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16323F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#EFF2F3]"
+            className="hover:text-[var(--text)] transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--canvas)]"
           >
-            Catalogues
+            Catalogs
           </Link>
           <span className="mx-1">/</span>
           <Link
-            href="/catalogue/bridal-2026"
-            className="hover:text-[#131A1F] transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16323F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#EFF2F3]"
+            href="/catalog/bridal-2026"
+            className="hover:text-[var(--text)] transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--canvas)]"
           >
             Bridal 2026
           </Link>
           <span className="mx-1">/</span>
-          <span className="text-[#131A1F]">Solitaire ring</span>
+          <span className="text-[var(--text)]">Solitaire ring</span>
         </nav>
 
         <div className="mt-4 grid grid-cols-[3fr_2fr] gap-8">
           <div>
             <div className="flex items-center gap-3">
-              {COLOURS.map((c) => (
+              {COLORS.map((c) => (
                 <button
                   key={c.id}
-                  onClick={() => setColour(c.id)}
-                  className="relative w-7 h-7 rounded-full flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16323F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#EFF2F3]"
+                  onClick={() => setColor(c.id)}
+                  className="relative w-7 h-7 rounded-full flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--canvas)]"
                   title={c.name}
                 >
                   <span
                     className={`w-6 h-6 rounded-full ${
-                      colour === c.id ? 'ring-2 ring-[#16323F] ring-offset-2' : ''
+                      color === c.id ? 'ring-2 ring-[var(--accent)] ring-offset-2' : ''
                     }`}
-                    style={{ backgroundColor: c.swatch, border: '1px solid #C3CCD1' }}
+                    style={{ backgroundColor: c.swatch, border: '1px solid var(--border-strong)' }}
                   />
                 </button>
               ))}
-              <span className="text-[13px] text-[#5C6870]">
-                {COLOURS.find((c) => c.id === colour)?.name}
+              <span className="text-[13px] text-[var(--text-sec)]">
+                {COLORS.find((c) => c.id === color)?.name}
               </span>
             </div>
 
@@ -207,28 +216,28 @@ export default function ProductDetail({ productId }: Props) {
               {VIEWS.map((v) => (
                 <div key={v}>
                   {showIncomplete && incompleteViews.has(v) ? (
-                    <div className="w-full aspect-square rounded-[12px] border border-[#DDE3E6] bg-white flex items-center justify-center">
-                      <span className="text-[13px] text-[#5C6870]">
+                    <div className="w-full aspect-square rounded-[12px] border border-[var(--border)] bg-white flex items-center justify-center">
+                      <span className="text-[13px] text-[var(--text-sec)]">
                         Generating
                       </span>
                     </div>
                   ) : (
-                    <div className="w-full aspect-square rounded-[12px] border border-[#DDE3E6] overflow-hidden bg-[#F4F6F7]">
+                    <div className="w-full aspect-square rounded-[12px] border border-[var(--border)] overflow-hidden bg-[var(--muted)]">
                       <img
-                        key={`${colour}-${v}`}
-                        src={VIEW_IMG[colour][v]}
+                        key={`${color}-${v}`}
+                        src={VIEW_IMG[color][v]}
                         alt={`${v} view`}
                         className="w-full h-full object-cover transition-opacity duration-[120ms]"
                       />
                     </div>
                   )}
-                  <p className="mt-1.5 text-[13px] text-[#5C6870]">{v}</p>
+                  <p className="mt-1.5 text-[13px] text-[var(--text-sec)]">{v}</p>
                 </div>
               ))}
             </div>
 
-            <div className="mt-6 pt-5 border-t border-[#DDE3E6]">
-              <p className="text-[13px] text-[#5C6870]">
+            <div className="mt-6 pt-5 border-t border-[var(--border)]">
+              <p className="text-[13px] text-[var(--text-sec)]">
                 Photographs you uploaded
               </p>
               <div className="mt-2 flex gap-3">
@@ -237,7 +246,7 @@ export default function ProductDetail({ productId }: Props) {
                     key={u}
                     src={u}
                     alt=""
-                    className="w-16 h-16 rounded-[12px] object-cover border border-[#DDE3E6] bg-[#F4F6F7]"
+                    className="w-16 h-16 rounded-[12px] object-cover border border-[var(--border)] bg-[var(--muted)]"
                   />
                 ))}
               </div>
@@ -245,46 +254,52 @@ export default function ProductDetail({ productId }: Props) {
           </div>
 
           <div>
-            <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[#131A1F]">
+            <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[var(--text)]">
               Ring
             </h1>
+
+            {unresolved && (
+              <p className="mt-3 text-[13px] text-[var(--alert)]">
+                Saved, but we couldn't tell these angles apart. Retake the photographs to start generating.
+              </p>
+            )}
 
             <div className="mt-6">
               {desc === DEFAULT_DESC && (
                 <div className="flex justify-end">
-                  <span className="px-2 h-6 flex items-center text-[13px] font-medium text-[#5C6870] bg-[#EFF2F3] rounded-full">
+                  <span className="px-2 h-6 flex items-center text-[13px] font-medium text-[var(--text-sec)] bg-[var(--canvas)] rounded-full">
                     Written by AI
                   </span>
                 </div>
               )}
-              <label className="block mt-1 text-sm font-medium text-[#131A1F]">
+              <label className="block mt-1 text-[13px] font-medium text-[var(--text)]">
                 Description
               </label>
               <textarea
                 value={desc}
                 rows={4}
                 onChange={(e) => handleDescChange(e.target.value)}
-                className="mt-1 w-full px-3 py-2 text-sm border border-[#DDE3E6] rounded-[12px] text-[#131A1F] outline-none focus:border-[#16323F] resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16323F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#EFF2F3]"
+                className="mt-1 w-full px-3 py-2 text-[13px] border border-[var(--border)] rounded-[12px] text-[var(--text)] outline-none focus:border-[var(--accent)] resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--canvas)]"
               />
-              <p className="mt-1 text-[13px] text-[#5C6870]">
+              <p className="mt-1 text-[13px] text-[var(--text-sec)]">
                 Edit this any time.
               </p>
               <SaveState />
             </div>
 
             <div className="mt-6">
-              <label className="text-sm font-medium text-[#131A1F]">
+              <label className="text-[13px] font-medium text-[var(--text)]">
                 Price
               </label>
-              <div className="mt-1 flex items-center border border-[#DDE3E6] rounded-[12px] focus-within:border-[#16323F] bg-white">
-                <span className="pl-3 text-sm text-[#5C6870]">$</span>
+              <div className="mt-1 flex items-center border border-[var(--border)] rounded-[12px] focus-within:border-[var(--accent)] bg-white">
+                <span className="pl-3 text-[13px] text-[var(--text-sec)]">$</span>
                 <input
                   value={price}
                   onChange={(e) => handlePriceChange(e.target.value)}
-                  className="w-full h-10 pl-2 pr-3 text-sm text-[#131A1F] outline-none bg-transparent tabular-nums focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16323F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#EFF2F3]"
+                  className="w-full h-10 pl-2 pr-3 text-[13px] text-[var(--text)] outline-none bg-transparent tabular-nums focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--canvas)]"
                 />
               </div>
-              <p className="mt-1 text-[13px] text-[#5C6870]">
+              <p className="mt-1 text-[13px] text-[var(--text-sec)]">
                 Leave blank to show Price on request.
               </p>
               <SaveState />
@@ -293,12 +308,12 @@ export default function ProductDetail({ productId }: Props) {
             <div className="mt-6">
               <button
                 onClick={handleVisibility}
-                className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16323F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#EFF2F3]"
+                className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--canvas)]"
                 aria-pressed={visible}
               >
                 <span
                   className={`relative inline-flex items-center w-9 h-5 rounded-full transition-colors duration-150 ${
-                    visible ? 'bg-[#16323F]' : 'bg-[#C7CBCC]'
+                    visible ? 'bg-[var(--accent)]' : 'bg-[var(--border-strong)]'
                   }`}
                 >
                   <span
@@ -307,30 +322,30 @@ export default function ProductDetail({ productId }: Props) {
                     }`}
                   />
                 </span>
-                <span className="text-sm font-medium text-[#131A1F]">
-                  Show in catalogue
+                <span className="text-[13px] font-medium text-[var(--text)]">
+                  Show in catalog
                 </span>
               </button>
-              <p className="mt-1 text-[13px] text-[#5C6870]">
+              <p className="mt-1 text-[13px] text-[var(--text-sec)]">
                 Turn this off to hide the product from customers without
                 deleting it.
               </p>
               {hiddenMsg && !visible && (
-                <p className="mt-1 text-[13px] text-[#3D6B54]">
-                  This product is now hidden from your catalogue.
+                <p className="mt-1 text-[13px] text-[var(--success)]">
+                  This product is now hidden from your catalog.
                 </p>
               )}
               <SaveState />
             </div>
 
-            <div className="mt-8 pt-6 border-t border-[#DDE3E6]">
+            <div className="mt-8 pt-6 border-t border-[var(--border)]">
               <button
                 onClick={() => setDeleteOpen(true)}
-                className="px-2 text-sm font-medium text-[#A8552A] hover:text-[#91441E] transition-colors duration-150 whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16323F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#EFF2F3]"
+                className="px-2 text-[13px] font-medium text-[var(--alert)] hover:text-[var(--alert-strong)] transition-colors duration-150 whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--canvas)]"
               >
                 Delete product
               </button>
-              <p className="mt-1 text-[13px] text-[#5C6870]">
+              <p className="mt-1 text-[13px] text-[var(--text-sec)]">
                 Deleting is permanent.
               </p>
             </div>
@@ -338,24 +353,14 @@ export default function ProductDetail({ productId }: Props) {
         </div>
       </div>
 
-      <div className="fixed bottom-6 right-6 z-40 flex items-center gap-1 bg-white border border-[#DDE3E6] rounded-full p-1 shadow-[0_8px_20px_-10px_rgba(19,26,31,0.25)]">
-        <span className="px-2 text-[13px] font-medium text-[#5C6870]">
-          Preview state
-        </span>
-        {demos.map((d) => (
-          <button
-            key={d}
-            onClick={() => applyDemo(d)}
-            className={`h-7 px-2 text-[13px] font-medium rounded-full transition-colors duration-150 whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16323F] focus-visible:ring-offset-2 focus-visible:ring-offset-[#EFF2F3] ${
-              demo === d
-                ? 'bg-[#16323F] text-white'
-                : 'text-[#5C6870] hover:bg-[#EFF2F3]'
-            }`}
-          >
-            {demoLabel[d]}
-          </button>
-        ))}
-      </div>
+      <StateSwitcherPanel
+        title="Preview state"
+        icon="ri-product-hunt-line"
+        hint="Switch how the product page looks"
+        groups={[{ options: demos.map((d) => ({ value: d, label: demoLabel[d] })) }]}
+        active={(v) => demo === v}
+        onSelect={(v) => applyDemo(v as DetailDemo)}
+      />
 
       <DeleteDialog
         open={deleteOpen}

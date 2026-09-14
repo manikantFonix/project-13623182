@@ -1,35 +1,72 @@
 'use client';
 
 import { useState } from 'react';
-import DesignTiles from './DesignTiles';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import DesignTiles, { JEWELRY_TYPES, MORE_TYPES } from './DesignTiles';
 import DesignDescription from './DesignDescription';
 import DesignLibrary, { type LibraryState } from './DesignLibrary';
+import Alert from './Alert';
 import CustomStateControl, { type CustomState } from './CustomStateControl';
-import PlaceholderPanel from './PlaceholderPanel';
+import { registerNewRequest } from './requests/data';
+import SketchWorkspace from './SketchWorkspace';
+import VoiceDialog from './VoiceDialog';
 
 const SAMPLE_DESC =
   'A one-off rose gold solitaire, six-prong setting, featuring a 1.2ct round brilliant. The customer asked for a slightly tapered band and no engraving.';
 
-const attachments = [
-  { id: 'a1', name: 'reference-scan.png', thumb: 'https://readdy.ai/api/search-image?query=close%20up%20jewellery%20sketch%20drawing%20of%20a%20ring%20on%20plain%20white%20paper%2C%20simple%20pencil%20line%20art%2C%20minimal&width=40&height=40&seq=41&orientation=squarish' },
-  { id: 'a2', name: 'stone-photo.jpg', thumb: 'https://readdy.ai/api/search-image?query=macro%20photograph%20of%20a%20single%20round%20cut%20gemstone%20on%20a%20plain%20white%20background%2C%20soft%20even%20lighting&width=40&height=40&seq=42&orientation=squarish' },
+const SKETCH_THUMB =
+  'https://readdy.ai/api/search-image?query=close%20up%20jewelry%20sketch%20drawing%20of%20a%20ring%20on%20plain%20white%20paper%2C%20simple%20pencil%20line%20art%2C%20minimal&width=40&height=40&seq=41&orientation=squarish';
+
+const sampleAttachments = [
+  { id: 'a1', name: 'reference-scan.png', thumb: SKETCH_THUMB, kind: 'photo' as const },
+  {
+    id: 'a2',
+    name: 'stone-photo.jpg',
+    thumb:
+      'https://readdy.ai/api/search-image?query=macro%20photograph%20of%20a%20single%20round%20cut%20gemstone%20on%20a%20plain%20white%20background%2C%20soft%20even%20lighting&width=40&height=40&seq=42&orientation=squarish',
+    kind: 'photo' as const,
+  },
 ];
 
+type Attachment = { id: string; name: string; thumb: string; kind: 'photo' | 'sketch' };
+
+const typeLabel: Record<string, string> = [
+  ...JEWELRY_TYPES,
+  ...MORE_TYPES,
+].reduce<Record<string, string>>((acc, t) => {
+  acc[t.id] = t.label;
+  return acc;
+}, {});
+
+const VIDEO_MSG =
+  "Video isn't accepted. Use a photo, a sketch, a description or your voice.";
+
 export default function CustomDesign() {
+  const router = useRouter();
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [description, setDescription] = useState('');
+  const [designNo, setDesignNo] = useState('JCX-102');
   const [more, setMore] = useState(false);
-  const [attachmentsList, setAttachmentsList] = useState<typeof attachments>([]);
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [generating, setGenerating] = useState(false);
   const [libraryState, setLibraryState] = useState<LibraryState>('ready');
-  const [panel, setPanel] = useState<string | null>(null);
+  const [balance, setBalance] = useState(18);
+  const [videoError, setVideoError] = useState<string | null>(null);
+  const [sketchOpen, setSketchOpen] = useState(false);
+  const [voiceOpen, setVoiceOpen] = useState(false);
+  const [typeError, setTypeError] = useState(false);
+  const [shakeKey, setShakeKey] = useState(0);
   const [demoState, setDemoState] = useState<CustomState>('default');
 
   const applyDemo = (s: CustomState) => {
     setDemoState(s);
+    setTypeError(false);
     setMore(s === 'more-expanded');
     setGenerating(s === 'generating');
-    setAttachmentsList(s === 'attachment' ? attachments : []);
+    setVideoError(s === 'video-refused' ? VIDEO_MSG : null);
+    setBalance(s === 'low-balance' ? 2 : 18);
+    setAttachmentsListFor(s);
     setLibraryState(
       s === 'library-empty'
         ? 'empty'
@@ -43,24 +80,49 @@ export default function CustomDesign() {
       setSelectedType(null);
       setDescription('');
     } else {
-      if (s === 'type-selected') {
-        setSelectedType('ring');
-        setDescription('');
-      } else {
-        setSelectedType('ring');
-        setDescription(SAMPLE_DESC);
-      }
+      setSelectedType('ring');
+      setDescription(s === 'type-selected' ? '' : SAMPLE_DESC);
+    }
+  };
+
+  const setAttachmentsListFor = (s: CustomState) => {
+    if (s === 'attachment') {
+      setAttachments(sampleAttachments);
+    } else if (s === 'has-sketch') {
+      setAttachments([
+        { id: 'sk1', name: 'sketch.png', thumb: SKETCH_THUMB, kind: 'sketch' },
+      ]);
+    } else if (s === 'voice') {
+      setAttachments([]);
+    } else {
+      setAttachments([]);
     }
   };
 
   const typeSelected = selectedType !== null;
-  const descriptionEntered = description.trim() !== '';
-  const canGenerate = typeSelected && descriptionEntered && !generating;
+  const textEntered = description.trim() !== '';
+  const hasAttachment = attachments.length > 0;
+  const hasInput = textEntered || hasAttachment;
+  const balanceShort = balance < 3;
+  const canGenerate = typeSelected && hasInput && !generating && !balanceShort;
+  const generateEnabled = hasInput && !generating && !balanceShort;
   const disabledReason = !typeSelected
-    ? 'Choose a jewellery type to continue.'
-    : !descriptionEntered
-      ? 'Describe the piece to continue.'
+    ? 'Choose a jewelry type to continue.'
+    : !hasInput
+      ? 'Add a description, a photo, a sketch or a voice note to continue.'
       : null;
+
+  const addFile = (file: File) => {
+    if (file.type.startsWith('video/')) {
+      setVideoError(VIDEO_MSG);
+      return;
+    }
+    setVideoError(null);
+    setAttachments((cur) => [
+      ...cur,
+      { id: `a${Date.now()}`, name: file.name, thumb: sampleAttachments[0].thumb, kind: 'photo' },
+    ]);
+  };
 
   const openFilePicker = () => {
     const input = document.createElement('input');
@@ -68,54 +130,92 @@ export default function CustomDesign() {
     input.accept = 'image/*';
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        setAttachmentsList((cur) => [
-          ...cur,
-          { id: `a${Date.now()}`, name: file.name, thumb: attachments[0].thumb },
-        ]);
-      }
+      if (file) addFile(file);
     };
     input.click();
+  };
+
+  const handleGenerate = () => {
+    if (!typeSelected) {
+      setTypeError(true);
+      setShakeKey((k) => k + 1);
+      return;
+    }
+    setTypeError(false);
+    if (!canGenerate) return;
+    registerNewRequest(typeLabel[selectedType!] ?? 'Jewelry', description.trim());
+    setGenerating(true);
+    setTimeout(() => router.push('/requests'), 0);
   };
 
   return (
     <div className="mt-8">
       <section>
         <div className="flex items-center justify-center gap-2">
-          <h2 className="text-[15px] font-semibold text-[#131A1F]">Jewellery type</h2>
-          <span className="text-[13px] text-[#5C6870]">Required</span>
+          <h2 className="text-[15px] font-semibold text-[var(--text)]">Jewelry type</h2>
+          <span className="text-[13px] text-[var(--text-sec)]">Required</span>
         </div>
         <div className="mt-3">
           <DesignTiles
             selected={selectedType}
+            invalid={typeError}
+            shakeKey={shakeKey}
             onSelect={(id) => {
               setSelectedType((cur) => (cur === id ? null : id));
+              setTypeError(false);
             }}
             more={more}
             onToggleMore={() => setMore((m) => !m)}
           />
         </div>
+        {typeError && (
+          <div role="alert" className="mt-3 max-w-[420px] mx-auto">
+            <Alert variant="error">Please select jewelry type</Alert>
+          </div>
+        )}
       </section>
 
       <section className="mt-8">
-        <h2 className="text-center text-[15px] font-semibold text-[#131A1F]">Describe your design</h2>
-        <div className="mt-3">
+        <div className="mt-0">
           <DesignDescription
             value={description}
-            onChange={setDescription}
+            onChange={(v) => {
+              setDescription(v);
+              setVideoError(null);
+            }}
+            designNo={designNo}
+            onDesignNoChange={setDesignNo}
             generating={generating}
-            attachments={attachmentsList}
-            onRemoveAttachment={(id) =>
-              setAttachmentsList((cur) => cur.filter((a) => a.id !== id))
-            }
+            attachments={attachments.map(({ id, name, thumb }) => ({ id, name, thumb }))}
+            onRemoveAttachment={(id) => setAttachments((cur) => cur.filter((a) => a.id !== id))}
             onAttach={openFilePicker}
-            onOpenPanel={setPanel}
-            canGenerate={canGenerate}
+            onCamera={openFilePicker}
+            onOpenSketch={() => setSketchOpen(true)}
+            onOpenVoice={() => setVoiceOpen(true)}
+            generateEnabled={generateEnabled}
             disabledReason={disabledReason}
-            onGenerate={() => setGenerating(true)}
-            onCancel={() => setGenerating(false)}
+            onGenerate={handleGenerate}
           />
         </div>
+
+        {balanceShort && (
+          <div className="mt-3 border-l-2 border-[var(--alert)] pl-4 py-3 text-[13px]">
+            <p className="text-[var(--alert)]">
+              You need at least 3 renders for this and have {balance}. Nothing has
+              been generated and no renders have been used.
+            </p>
+            <Link
+              href="/settings/usage"
+              className={`mt-2 inline-flex items-center h-9 px-4 text-[13px] font-medium text-[var(--text)] bg-[var(--surface)] border border-[var(--border)] rounded-full hover:bg-[var(--muted)] transition-colors duration-150 whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--canvas)]`}
+            >
+              Top up renders
+            </Link>
+          </div>
+        )}
+
+        {videoError && (
+          <p className="mt-3 text-[13px] text-[var(--alert)]">{videoError}</p>
+        )}
       </section>
 
       <div className="mt-8">
@@ -126,7 +226,27 @@ export default function CustomDesign() {
       </div>
 
       <CustomStateControl state={demoState} onChange={applyDemo} />
-      {panel && <PlaceholderPanel title={panel} onClose={() => setPanel(null)} />}
+      {sketchOpen && (
+        <SketchWorkspace
+          onClose={() => setSketchOpen(false)}
+          onAdd={(dataUrl) => {
+            setVideoError(null);
+            setAttachments((cur) => [
+              ...cur,
+              { id: `sk${Date.now()}`, name: 'sketch.png', thumb: dataUrl, kind: 'sketch' },
+            ]);
+          }}
+        />
+      )}
+      {voiceOpen && (
+        <VoiceDialog
+          onClose={() => setVoiceOpen(false)}
+          onUse={(transcript) => {
+            setVideoError(null);
+            setDescription(transcript);
+          }}
+        />
+      )}
     </div>
   );
 }

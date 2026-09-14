@@ -36,7 +36,7 @@ export default function Dropdown({
       {trigger}
       {open && (
         <div
-          className={`absolute z-30 mt-1 bg-white border border-[#DDE3E6] rounded-[12px] p-1 ${
+          className={`absolute z-30 mt-1 bg-[var(--surface)] border border-[var(--border)] rounded-[12px] p-1 ${
             align === 'left' ? 'left-0' : 'right-0'
           } ${panelClass}`}
         >
