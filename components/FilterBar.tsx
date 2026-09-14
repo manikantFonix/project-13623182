@@ -7,12 +7,18 @@ export interface Filters {
   category: string | null;
   status: string | null;
   renderState: string | null;
+  min?: string;
+  max?: string;
+  priceOnRequest?: boolean;
 }
 
 export const emptyFilters: Filters = {
   category: null,
   status: null,
   renderState: null,
+  min: '',
+  max: '',
+  priceOnRequest: false,
 };
 
 const CATEGORIES = [

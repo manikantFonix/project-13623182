@@ -18,7 +18,7 @@ interface Props {
   open: boolean;
   onClose: () => void;
   openButtonRef?: React.RefObject<HTMLButtonElement | null>;
-  onAddProduct: (p: Product) => void;
+  onAddProduct?: (p: Product) => void;
 }
 
 const CATEGORIES = [
@@ -215,7 +215,7 @@ export default function AddProductDialog({
         setSaveError(true);
         return;
       }
-      onAddProduct(buildProduct(preview === 'unresolved'));
+      onAddProduct?.(buildProduct(preview === 'unresolved'));
       close();
     }, 1200);
   };

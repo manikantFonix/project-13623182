@@ -324,7 +324,11 @@ export default function CatalogueWorkspace() {
           </button>
         ))}
       </div>
-      <AddProductDialog open={addOpen} onClose={() => setAddOpen(false)} />
+      <AddProductDialog
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        onAddProduct={(p) => setData((prev) => [p, ...prev])}
+      />
     </main>
   );
 }
