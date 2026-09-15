@@ -25,6 +25,14 @@ export type WidgetState =
   | 'themeNeutral'
   | 'themeReReading'
   | 'reReadDisabled'
+  | 'rateUnset'
+  | 'rateSet'
+  | 'rateEditing'
+  | 'rateUnsaved'
+  | 'rateSaving'
+  | 'rateSaveFailed'
+  | 'rateCleared'
+  | 'rateInvalid'
   | 'loading'
   | 'error';
 
@@ -132,6 +140,13 @@ export const SNIPPET =
 
 export const EMBED_KEY = 'cm_live_7f3a92b8c1';
 
+export const RATE_DEFAULT = 420;
+export const RATE_EXAMPLE_PIECE = 'ring';
+export const RATE_EXAMPLE_DAYS = 1.2;
+
+export const formatMoney = (value: number): string =>
+  `US$${Math.round(value).toLocaleString('en-US')}`;
+
 export const previewGroups: {
   group: string;
   items: { value: WidgetState; label: string }[];
@@ -174,6 +189,19 @@ export const previewGroups: {
       { value: 'themeNeutral', label: 'Neutral' },
       { value: 'themeReReading', label: 'Re-reading' },
       { value: 'reReadDisabled', label: 'Re-read disabled' },
+    ],
+  },
+  {
+    group: 'Bench rate',
+    items: [
+      { value: 'rateUnset', label: 'Not set · default in use' },
+      { value: 'rateSet', label: 'Rate set' },
+      { value: 'rateEditing', label: 'Editing' },
+      { value: 'rateUnsaved', label: 'Unsaved changes' },
+      { value: 'rateSaving', label: 'Saving' },
+      { value: 'rateSaveFailed', label: 'Save failed' },
+      { value: 'rateCleared', label: 'Cleared to default' },
+      { value: 'rateInvalid', label: 'Zero refused' },
     ],
   },
   {

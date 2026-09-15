@@ -180,10 +180,10 @@ function scenarioData(scenario: MfrScenario): {
     };
   }
 
-  const approvedEntries: MfrEntry[] = baseEntries().map((e) => ({
+  const approvedEntries = baseEntries().map((e) => ({
     ...e,
     quote: quoteFor(e.id),
-    status: (e.id === 'platinum' ? 'approved' : 'not-selected') as MfrEntry['status'],
+    status: e.id === 'platinum' ? ('approved' as const) : ('not-selected' as const),
   }));
   const timeline =
     scenario === 'in-production'

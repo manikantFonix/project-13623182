@@ -51,7 +51,7 @@ export default function ConsumerProductRoute({
         className="min-h-screen bg-[#EDF1FA]"
         style={consumerTokenStyle(catalog.brand.primaryColor)}
       >
-        <ConsumerHeader brand={catalog.brand} />
+        <ConsumerHeader brand={catalog.brand} showLogo={true} />
         <WithdrawnView token={token} />
         <SelectionBar token={token} brand={catalog.brand} />
         <PreviewControl

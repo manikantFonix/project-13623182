@@ -75,7 +75,9 @@ export function getStatus() {
 
 export function subscribe(fn: () => void) {
   listeners.add(fn);
-  return () => listeners.delete(fn);
+  return () => {
+    listeners.delete(fn);
+  };
 }
 
 export function useNotifications() {
@@ -89,10 +91,8 @@ export function useNotifications() {
       load();
     }
     const update = () => setSnapshot({ items: [...state.items], status: state.status });
-    const unsubscribe = subscribe(update);
-    return () => {
-      unsubscribe();
-    };
+    update();
+    return subscribe(update);
   }, []);
 
   return snapshot;

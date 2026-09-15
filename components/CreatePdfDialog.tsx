@@ -485,8 +485,8 @@ function SelectPhase({
           <p className="p-4 text-[13px] text-[var(--text-sec)]">No pieces match your search.</p>
         ) : (
           products.map((p) => {
-            const r = includeReason(p);
-            const reason = r === 'ok' ? null : reasonText[r];
+            const rKey = includeReason(p);
+            const reason = rKey === 'ok' ? null : reasonText[rKey];
             const disabled = capReached && !selected.has(p.id);
             const isChecked = selected.has(p.id);
             const dimmed = reason !== null || disabled;

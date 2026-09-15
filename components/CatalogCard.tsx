@@ -22,13 +22,11 @@ export default function CatalogCard({ catalog }: Props) {
       className="group bg-[var(--surface)] border border-[var(--border)] rounded-[12px] overflow-hidden block text-left transition-colors duration-150 hover:border-[var(--border-strong)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--canvas)]"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-[var(--muted)]">
-        {catalog.image ? (
-          <img
-            src={catalog.image}
-            alt={catalog.name}
-            className="w-full h-full object-cover"
-          />
-        ) : null}
+        <img
+          src={catalog.image}
+          alt={catalog.name}
+          className="w-full h-full object-cover"
+        />
         <span
           className={`absolute top-2 right-2 inline-flex items-center h-6 px-2 rounded-full text-xs font-medium ${
             live ? 'text-[var(--success)]' : 'text-[var(--text-sec)]'

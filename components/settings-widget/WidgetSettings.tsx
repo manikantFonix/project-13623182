@@ -4,6 +4,7 @@ import StatusCard from './StatusCard';
 import WebsitesCard from './WebsitesCard';
 import SnippetCard from './SnippetCard';
 import ThemeCard from './ThemeCard';
+import LabourRateCard from './LabourRateCard';
 import { focusRing, type WidgetState } from './data';
 
 function LoadingCard() {
@@ -47,14 +48,15 @@ export default function WidgetSettings({ state }: { state: WidgetState }) {
       <div className="mt-5 flex flex-col gap-4 max-w-[720px]">
           <StatusCard key={`status-${state}`} state={state} />
           {loading ? (
-            [0, 1, 2].map((i) => <LoadingCard key={i} />)
+            [0, 1, 2, 3].map((i) => <LoadingCard key={i} />)
           ) : error ? (
-            [0, 1, 2].map((i) => <ErrorCard key={i} />)
+            [0, 1, 2, 3].map((i) => <ErrorCard key={i} />)
           ) : (
             <>
               <WebsitesCard key={`websites-${state}`} state={state} />
               <SnippetCard key={`snippet-${state}`} state={state} />
               <ThemeCard key={`theme-${state}`} state={state} />
+              <LabourRateCard key={`rate-${state}`} state={state} />
             </>
           )}
         </div>

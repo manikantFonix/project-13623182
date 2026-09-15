@@ -155,9 +155,7 @@ export default function CustomerTab({
   onResume,
 }: Props) {
   const [scenario, setScenario] = useState<CustomerScenario>(() => defaultScenario(req).scenario);
-  const [customer, setCustomer] = useState<Customer | undefined>(() =>
-    req.customer ? { id: 'req-customer', ...req.customer } : undefined
-  );
+  const [customer, setCustomer] = useState<Customer | undefined>(req.customer);
   const [decision, setDecision] = useState<Request['decision'] | undefined>(req.decision);
   const [linkState, setLinkState] = useState<Request['linkState']>(req.linkState);
   const [sendOpen, setSendOpen] = useState(false);
