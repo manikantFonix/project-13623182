@@ -144,7 +144,7 @@ export default function CatalogSettings() {
 
           <div className="mt-4 grid grid-cols-3 gap-3">
             {METALS.map((m) => {
-              const locked = 'locked' in m && Boolean(m.locked);
+              const locked = 'locked' in m ? !!m.locked : false;
               const selected = locked || cols.includes(m.id);
               return (
                 <button

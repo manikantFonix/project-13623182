@@ -59,14 +59,19 @@ export default function SubsViewDialog({
         <Fact term="Billing cycle" value={cycleLabel(row.cycle)} />
         <Fact
           term="Days left in period"
-          value={row.daysLeft === null ? 'No period yet' : `${fmtInt(row.daysLeft)} days`}
+          value={
+            row.daysLeft === null
+              ? 'No period yet'
+              : row.status === 'expired'
+                ? 'Period ended'
+                : `${fmtInt(row.daysLeft)} days`
+          }
         />
         <Fact
           term={row.nextBillingLabel || 'Next billing'}
           value={row.nextBillingOn ?? 'Not scheduled'}
         />
         <Fact term="Period ends" value={row.endsOn ?? 'Not scheduled'} />
-        {row.onTrial && <Fact term="Converts to" value={row.planName} />}
       </dl>
 
       <p className="mt-5 text-[12px] font-semibold uppercase tracking-[0.06em] text-[var(--text-sec)]">

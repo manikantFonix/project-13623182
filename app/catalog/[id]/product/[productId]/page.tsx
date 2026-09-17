@@ -1,3 +1,4 @@
+import { use } from 'react';
 import { notFound } from 'next/navigation';
 import AppShell from '../../../../../components/AppShell';
 import ProductDetail from '../../../../../components/ProductDetail';
@@ -11,12 +12,12 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export default async function ProductPage({
+export default function ProductPage({
   params,
 }: {
   params: Promise<{ id: string; productId: string }>;
 }) {
-  const { id, productId } = await params;
+  const { id, productId } = use(params);
   if (!CATALOG_IDS.includes(id)) {
     notFound();
   }

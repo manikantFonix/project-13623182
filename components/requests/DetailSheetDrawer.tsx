@@ -513,8 +513,9 @@ export default function DetailSheetDrawer({
               <NotesField
                 value={notes}
                 onChange={(val) => {
-                  setNotes(val);
-                  updateDetailSheetSpecs({ specialInstructions: val });
+                  const valStr = typeof val === 'string' ? val : (val as any)?.target?.value ?? '';
+                  setNotes(valStr);
+                  updateDetailSheetSpecs({ specialInstructions: valStr });
                 }}
                 maxLength={180}
                 rows={5}

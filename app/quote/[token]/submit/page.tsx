@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { use } from 'react';
 import QuoteFormRoute from '../../../../components/quote/QuoteFormRoute';
 
 export const metadata: Metadata = {
@@ -12,7 +13,7 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export default async function QuoteSubmitPage({ params }: { params: Promise<{ token: string }> }) {
-  const { token } = await params;
+export default function QuoteSubmitPage({ params }: { params: Promise<{ token: string }> }) {
+  const { token } = use(params);
   return <QuoteFormRoute basePath={`/quote/${token}`} />;
 }

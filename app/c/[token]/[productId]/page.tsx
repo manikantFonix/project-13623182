@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { use, Suspense } from 'react';
 import ConsumerProductRoute from '../../../../components/consumer-catalog/ConsumerProductRoute';
 
 const PRODUCT_IDS = [
@@ -30,12 +30,12 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export default async function ConsumerProductPage({
+export default function ConsumerProductPage({
   params,
 }: {
   params: Promise<{ token: string; productId: string }>;
 }) {
-  const { token, productId } = await params;
+  const { token, productId } = use(params);
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#EDF1FA]" />}>
       <ConsumerProductRoute

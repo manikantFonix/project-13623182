@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { use, Suspense } from 'react';
 import ConsumerSentRoute from '../../../../../components/consumer-catalog/ConsumerSentRoute';
 
 export function generateStaticParams() {
@@ -11,12 +11,12 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export default async function ConsumerRequestSentPage({
+export default function ConsumerRequestSentPage({
   params,
 }: {
   params: Promise<{ token: string }>;
 }) {
-  const { token } = await params;
+  const { token } = use(params);
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#EDF1FA]" />}>
       <ConsumerSentRoute token={token} />

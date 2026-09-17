@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { use, Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import AppShell from '../../../components/AppShell';
 import CatalogWorkspace from '../../../components/CatalogWorkspace';
@@ -10,8 +10,8 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export default async function CatalogPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default function CatalogPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   if (!CATALOG_IDS.includes(id)) {
     notFound();
   }

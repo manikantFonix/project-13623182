@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { use, Suspense } from 'react';
 import AdminShell from '../../../../components/admin/AdminShell';
 import RetailerDetail from '../../../../components/admin/retailers/RetailerDetail';
 import RetailerDetailSkeleton from '../../../../components/admin/retailers/RetailerDetailSkeleton';
@@ -20,8 +20,8 @@ export async function generateStaticParams() {
   ];
 }
 
-export default async function RetailerDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default function RetailerDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
   return (
     <AdminShell>
       <Suspense
@@ -31,7 +31,7 @@ export default async function RetailerDetailPage({ params }: { params: Promise<{
           </main>
         }
       >
-        <RetailerDetail retailerId={id} />
+        <RetailerDetail retailerId={resolvedParams.id} />
       </Suspense>
     </AdminShell>
   );

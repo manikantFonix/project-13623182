@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { use, Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import AppShell from '../../../components/AppShell';
 import RequestsWorkspace from '../../../components/requests/RequestsWorkspace';
@@ -25,12 +25,12 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export default async function RequestDetailPage({
+export default function RequestDetailPage({
   params,
 }: {
   params: Promise<{ requestId: string }>;
 }) {
-  const { requestId } = await params;
+  const { requestId } = use(params);
   if (!KNOWN_IDS.includes(requestId)) {
     notFound();
   }

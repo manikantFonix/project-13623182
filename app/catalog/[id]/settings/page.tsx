@@ -1,3 +1,4 @@
+import { use } from 'react';
 import { notFound } from 'next/navigation';
 import AppShell from '../../../../components/AppShell';
 import CatalogSettings from '../../../../components/CatalogSettings';
@@ -9,8 +10,8 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export default async function SettingsPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default function SettingsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   if (!CATALOG_IDS.includes(id)) {
     notFound();
   }

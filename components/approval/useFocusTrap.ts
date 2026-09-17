@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, type RefObject } from 'react';
 
-export function useFocusTrap<T extends HTMLElement = HTMLElement>(
+export function useFocusTrap(
   active: boolean,
   onClose: () => void,
-  initialFocus?: RefObject<T | null> | null,
+  initialFocus?: RefObject<HTMLElement | null>,
 ) {
   const ref = useRef<HTMLDivElement>(null);
   const closeRef = useRef(onClose);

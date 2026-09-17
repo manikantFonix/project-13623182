@@ -87,25 +87,26 @@ function Bar({
 }
 
 function PeriodCell({ row }: { row: SubView }) {
-  if (row.onTrial && row.daysLeft !== null) {
-    return (
-      <>
-        <p className="text-[13px] font-medium tabular-nums text-[var(--text)]">
-          {row.daysLeft} {row.daysLeft === 1 ? 'day' : 'days'} left in trial
-        </p>
-        <Bar share={row.elapsedShare ?? 0} fill="bg-[var(--accent)]" />
-        <p className="mt-1.5 text-[13px] text-[var(--text-sec)]">
-          {cycleLabel(row.cycle)} · billing starts {row.nextBillingOn}
-        </p>
-      </>
-    );
-  }
   if (row.daysLeft === null || row.elapsedShare === null) {
     return (
       <>
         <p className="text-[13px] text-[var(--text-sec)]">No period yet</p>
         <p className="mt-1 text-[13px] text-[var(--muted-text)]">
           {cycleLabel(row.cycle)} · starts when a plan is chosen.
+        </p>
+      </>
+    );
+  }
+  if (row.status === 'expired') {
+    return (
+      <>
+        <p className="text-[13px] font-medium text-[var(--alert-strong)]">Period ended</p>
+        <Bar share={100} fill="bg-[var(--muted-text)]" />
+        <p className="mt-1.5 text-[13px] tabular-nums text-[var(--text-sec)]">
+          {cycleLabel(row.cycle)} · period complete
+        </p>
+        <p className="mt-1 text-[13px] tabular-nums text-[var(--alert-strong)]">
+          Ended {row.nextBillingOn}
         </p>
       </>
     );
@@ -174,7 +175,7 @@ function UsageCell({ row }: { row: SubView }) {
 }
 
 function TopUpCell({ row }: { row: SubView }) {
-  if (row.status === 'awaiting') {
+  if (row.used === null) {
     return (
       <>
         <p className="text-[13px] text-[var(--text-sec)]">No pack</p>
@@ -285,11 +286,6 @@ export default function SubsTable({
                 {row.status === 'cancelling' && (
                   <p className="mt-1.5 text-[13px] text-[var(--alert-strong)]">
                     Access continues to the end.
-                  </p>
-                )}
-                {row.onTrial && (
-                  <p className="mt-1.5 text-[13px] text-[var(--muted-text)]">
-                    Converts to {row.planName} when the trial ends.
                   </p>
                 )}
               </td>

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
+import { use, Suspense } from 'react';
 import ApprovalRoute from '../../../components/approval/ApprovalRoute';
 
 export const metadata: Metadata = {
@@ -13,8 +13,8 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export default async function ApprovalPage({ params }: { params: Promise<{ token: string }> }) {
-  const { token } = await params;
+export default function ApprovalPage({ params }: { params: Promise<{ token: string }> }) {
+  const { token } = use(params);
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#EDF1FA]" />}>
       <ApprovalRoute token={token} />

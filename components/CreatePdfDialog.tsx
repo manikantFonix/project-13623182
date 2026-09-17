@@ -486,7 +486,7 @@ function SelectPhase({
         ) : (
           products.map((p) => {
             const r = includeReason(p);
-            const reason = r === 'ok' ? null : (reasonText as Record<string, string>)[r];
+            const reason = r === 'ok' ? null : reasonText[r];
             const disabled = capReached && !selected.has(p.id);
             const isChecked = selected.has(p.id);
             const dimmed = reason !== null || disabled;

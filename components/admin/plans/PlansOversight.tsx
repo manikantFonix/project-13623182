@@ -253,6 +253,7 @@ export default function PlansOversight() {
                     subscribers: 0,
                     features: ['bespoke'],
                     ...values,
+                    status: values.status ?? 'live',
                   },
                 ]),
               `${values.name} created.`

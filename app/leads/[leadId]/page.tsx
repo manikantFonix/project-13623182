@@ -1,3 +1,4 @@
+import { use } from 'react';
 import { notFound } from 'next/navigation';
 import AppShell from '../../../components/AppShell';
 import LeadDetailRoute from '../../../components/leads/LeadDetailRoute';
@@ -22,12 +23,12 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export default async function LeadDetailPage({
+export default function LeadDetailPage({
   params,
 }: {
   params: Promise<{ leadId: string }>;
 }) {
-  const { leadId } = await params;
+  const { leadId } = use(params);
   if (!KNOWN_IDS.includes(leadId)) {
     notFound();
   }

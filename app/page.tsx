@@ -29,15 +29,17 @@ export default function Home() {
   return (
     <AppShell>
       <main className="min-h-screen pb-16">
-        <div className="max-w-[1180px] mx-auto px-8 pt-8">
-          <div className="flex justify-center">
+        <div className="pt-8">
+          <div className="flex justify-center" style={{ marginLeft: '-128px' }}>
             <SegmentedControl mode={mode} onChange={setMode} count={catalogs.length} />
           </div>
-          {mode === 'custom' ? (
-            <CustomDesign />
-          ) : (
-            <CatalogPage catalogs={catalogs} onCreated={handleCreated} />
-          )}
+          <div className="max-w-[1180px] mx-auto px-8">
+            {mode === 'custom' ? (
+              <CustomDesign />
+            ) : (
+              <CatalogPage catalogs={catalogs} onCreated={handleCreated} />
+            )}
+          </div>
         </div>
       </main>
     </AppShell>

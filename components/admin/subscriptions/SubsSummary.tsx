@@ -13,15 +13,15 @@ interface Tile {
 
 export default function SubsSummary({
   active,
-  trial,
+  inactive,
+  expired,
   cancelling,
-  atZero,
   consumed,
 }: {
   active: number;
-  trial: number;
+  inactive: number;
+  expired: number;
   cancelling: number;
-  atZero: number;
   consumed: number;
 }) {
   const tiles: Tile[] = [
@@ -33,14 +33,24 @@ export default function SubsSummary({
       alert: false,
     },
     {
-      id: 'trial',
-      label: 'On free trial',
-      figure: fmtInt(trial),
+      id: 'inactive',
+      label: 'Inactive',
+      figure: fmtInt(inactive),
       note:
-        trial > 0
-          ? 'No charge yet. Billing starts when the trial ends.'
-          : 'Nobody is on a trial right now.',
+        inactive > 0
+          ? 'No plan running. Nothing is being generated.'
+          : 'Every retailer has a running plan.',
       alert: false,
+    },
+    {
+      id: 'expired',
+      label: 'Expired',
+      figure: fmtInt(expired),
+      note:
+        expired > 0
+          ? 'The billing period ended without renewal.'
+          : 'No subscription has lapsed.',
+      alert: expired > 0,
     },
     {
       id: 'cancelling',
@@ -48,16 +58,6 @@ export default function SubsSummary({
       figure: fmtInt(cancelling),
       note: 'Access continues until the period ends.',
       alert: false,
-    },
-    {
-      id: 'zero',
-      label: 'At zero renders',
-      figure: fmtInt(atZero),
-      note:
-        atZero > 0
-          ? 'Their widgets have stopped generating.'
-          : 'Every retailer has renders left.',
-      alert: atZero > 0,
     },
     {
       id: 'consumed',
