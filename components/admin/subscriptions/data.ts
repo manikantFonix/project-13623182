@@ -1,6 +1,6 @@
 import { PLANS } from '../plans/data';
 
-export type SubStatus = 'active' | 'trial' | 'cancelling' | 'awaiting' | 'disabled';
+export type SubStatus = 'active' | 'inactive' | 'expired' | 'cancelling';
 
 export type BillingCycle = 'monthly' | 'yearly';
 
@@ -73,7 +73,7 @@ const SEEDS: SubRow[] = [
     planId: 'pro',
     planName: 'Pro',
     allowance: 1200,
-    status: 'disabled',
+    status: 'expired',
     daysLeft: 0,
     used: 1200,
     topUp: 0,
@@ -143,7 +143,7 @@ const SEEDS: SubRow[] = [
     planId: 'pro',
     planName: 'Pro',
     allowance: 1200,
-    status: 'disabled',
+    status: 'expired',
     daysLeft: 0,
     used: 410,
     topUp: 75,
@@ -283,7 +283,7 @@ const SEEDS: SubRow[] = [
     planId: 'starter',
     planName: 'Starter',
     allowance: 300,
-    status: 'trial',
+    status: 'active',
     daysLeft: 8,
     used: 60,
     topUp: 0,
@@ -297,7 +297,7 @@ const SEEDS: SubRow[] = [
     planId: 'pro',
     planName: 'Pro',
     allowance: 1200,
-    status: 'trial',
+    status: 'active',
     daysLeft: 9,
     used: 210,
     topUp: 0,
@@ -311,7 +311,7 @@ const SEEDS: SubRow[] = [
     planId: 'starter',
     planName: 'Starter',
     allowance: 300,
-    status: 'awaiting',
+    status: 'inactive',
     daysLeft: null,
     used: null,
     topUp: 0,
@@ -335,7 +335,6 @@ export interface SubView extends SubRow {
   endsOn: string | null;
   atZero: boolean;
   burningFast: boolean;
-  onTrial: boolean;
   topUpTotal: number;
   topUpUsed: number;
   onTopUp: boolean;
@@ -361,32 +360,28 @@ export const fmtInt = (n: number): string => n.toLocaleString('en-US');
 
 export const statusLabel: Record<SubStatus, string> = {
   active: 'Active',
-  trial: 'Free trial',
+  inactive: 'Inactive',
+  expired: 'Expired',
   cancelling: 'Cancelling',
-  awaiting: 'Free Trial',
-  disabled: 'Inactive',
 };
 
 export const statusTone: Record<SubStatus, 'success' | 'alert' | 'neutral'> = {
   active: 'success',
-  trial: 'success',
+  inactive: 'neutral',
+  expired: 'neutral',
   cancelling: 'alert',
-  awaiting: 'neutral',
-  disabled: 'neutral',
 };
 
 export const STATUS_OPTIONS: { value: string; label: string }[] = [
   { value: 'all', label: 'All statuses' },
   { value: 'active', label: 'Active' },
-  { value: 'trial', label: 'Free trial' },
+  { value: 'inactive', label: 'Inactive' },
+  { value: 'expired', label: 'Expired' },
   { value: 'cancelling', label: 'Cancelling' },
-  { value: 'awaiting', label: 'Free Trial' },
-  { value: 'disabled', label: 'Inactive' },
 ];
 
 export const PLAN_OPTIONS: { value: string; label: string }[] = [
   { value: 'all', label: 'All plans' },
-  { value: 'trial', label: 'Free Trial' },
   ...PLANS.filter((plan) => plan.status === 'live' && plan.id !== 'free-trial').map((plan) => ({
     value: plan.id,
     label: plan.name,
@@ -406,32 +401,32 @@ const cardFor = (id: string): { brand: string; last4: string; expiry: string } =
 };
 
 const view = (row: SubRow): SubView => {
-  const awaiting = row.status === 'awaiting' || row.used === null || row.daysLeft === null;
-  const card = awaiting ? null : cardFor(row.id);
+  const notStarted = row.used === null || row.daysLeft === null;
+  const card = notStarted ? null : cardFor(row.id);
   const topUpTotal = row.topUpTotal ?? (row.topUp > 0 ? row.topUp * 2 : 0);
   const topUpUsed = Math.max(0, topUpTotal - row.topUp);
   const cycleDays = CYCLE_DAYS[row.cycle];
-  const includedLeft = awaiting ? null : row.allowance - (row.used ?? 0);
-  const usedShare = awaiting ? null : Math.round(((row.used ?? 0) / row.allowance) * 100);
-  const elapsedShare = awaiting
+  const includedLeft = notStarted ? null : row.allowance - (row.used ?? 0);
+  const usedShare = notStarted ? null : Math.round(((row.used ?? 0) / row.allowance) * 100);
+  const elapsedShare = notStarted
     ? null
     : Math.round(((cycleDays - (row.daysLeft ?? 0)) / cycleDays) * 100);
   const burn =
-    awaiting || !usedShare || !elapsedShare ? null : Number((usedShare / elapsedShare).toFixed(1));
-  const atZero = !awaiting && includedLeft !== null && includedLeft <= 0 && row.topUp <= 0;
-  const burningFast = !awaiting && usedShare !== null && elapsedShare !== null && usedShare - elapsedShare >= 20;
-  const nextBillingLabel = awaiting
+    notStarted || !usedShare || !elapsedShare ? null : Number((usedShare / elapsedShare).toFixed(1));
+  const atZero = !notStarted && includedLeft !== null && includedLeft <= 0 && row.topUp <= 0;
+  const burningFast = !notStarted && usedShare !== null && elapsedShare !== null && usedShare - elapsedShare >= 20;
+  const nextBillingLabel = notStarted
     ? ''
     : row.status === 'cancelling'
       ? 'Access ends'
-      : row.status === 'trial'
-        ? 'Billing starts'
+      : row.status === 'expired'
+        ? 'Ended'
         : 'Next billing';
 
   return {
     ...row,
     cycleDays,
-    nextBillingOn: awaiting ? null : endsOn(row.daysLeft ?? 0),
+    nextBillingOn: notStarted ? null : endsOn(row.daysLeft ?? 0),
     nextBillingLabel,
     includedLeft,
     usedShare,
@@ -440,10 +435,9 @@ const view = (row: SubRow): SubView => {
     endsOn: row.daysLeft === null ? null : endsOn(row.daysLeft),
     atZero,
     burningFast,
-    onTrial: row.status === 'trial',
     topUpTotal,
     topUpUsed,
-    onTopUp: !awaiting && includedLeft !== null && includedLeft <= 0 && topUpTotal > 0,
+    onTopUp: !notStarted && includedLeft !== null && includedLeft <= 0 && topUpTotal > 0,
     paymentBrand: card?.brand ?? null,
     paymentLast4: card?.last4 ?? null,
     paymentExpiry: card ? card.expiry : null,
@@ -453,7 +447,7 @@ const view = (row: SubRow): SubView => {
 export const ROWS: SubView[] = SEEDS.map(view);
 
 export const TOPUP_ROWS: SubView[] = ROWS.filter(
-  (row) => row.topUp > 0 && row.status !== 'awaiting'
+  (row) => row.topUp > 0 && row.status !== 'inactive'
 ).map((row) => {
   const exhausted = view({ ...row, used: row.allowance });
   return { ...exhausted, burningFast: false };
@@ -468,8 +462,11 @@ export const activeCount = (rows: SubView[]): number =>
 export const cancellingCount = (rows: SubView[]): number =>
   rows.filter((row) => row.status === 'cancelling').length;
 
-export const trialCount = (rows: SubView[]): number =>
-  rows.filter((row) => row.onTrial).length;
+export const inactiveCount = (rows: SubView[]): number =>
+  rows.filter((row) => row.status === 'inactive').length;
+
+export const expiredCount = (rows: SubView[]): number =>
+  rows.filter((row) => row.status === 'expired').length;
 
 export const atZeroCount = (rows: SubView[]): number => rows.filter((row) => row.atZero).length;
 
@@ -477,8 +474,7 @@ export const filterRows = (rows: SubView[], status: string, plan: string, query:
   const term = query.trim().toLowerCase();
   return rows.filter((row) => {
     if (status !== 'all' && row.status !== status) return false;
-    if (plan === 'trial' && !row.onTrial) return false;
-    if (plan !== 'all' && plan !== 'trial' && row.planId !== plan) return false;
+    if (plan !== 'all' && row.planId !== plan) return false;
     if (term && !row.name.toLowerCase().includes(term)) return false;
     return true;
   });

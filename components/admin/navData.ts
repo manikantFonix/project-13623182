@@ -1,4 +1,3 @@
-import { getBottleneckView } from './bottlenecks/data';
 import { WIDGETS_ATTENTION } from './widgets/data';
 
 export interface AdminNavScreenDef {
@@ -17,7 +16,6 @@ export interface AdminNavAreaDef {
   children?: AdminNavScreenDef[];
 }
 
-const openBottlenecks = getBottleneckView('attention').aboveCount;
 const widgetAttention = WIDGETS_ATTENTION;
 
 export const adminNav: AdminNavAreaDef[] = [
@@ -32,13 +30,6 @@ export const adminNav: AdminNavAreaDef[] = [
     label: 'Monitoring',
     icon: 'ri-line-chart-line',
     children: [
-      {
-        label: 'Bottlenecks',
-        icon: 'ri-alarm-warning-line',
-        href: '/admin/bottlenecks',
-        count: openBottlenecks,
-        countLabel: `${openBottlenecks} open bottlenecks need a look`,
-      },
       { label: 'Catalogs', icon: 'ri-book-2-line', href: '/admin/catalogs' },
       { label: 'Leads', icon: 'ri-user-received-2-line', href: '/admin/leads' },
       {
@@ -87,7 +78,7 @@ export const adminNav: AdminNavAreaDef[] = [
     children: [
       { label: 'Prompts', icon: 'ri-chat-3-line', href: '/admin/prompts' },
       { label: 'Estimator', icon: 'ri-scales-3-line', href: '/admin/estimator' },
-      { label: 'Audit trail', icon: 'ri-file-shield-2-line', href: '/admin/audit-trail' },
+      { label: 'Activity', icon: 'ri-history-line', href: '/admin/activity' },
     ],
   },
 ];

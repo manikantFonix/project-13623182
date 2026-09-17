@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { use, Suspense } from 'react';
 import ConsumerPdfRoute from '../../../../../components/consumer-pdf/ConsumerPdfRoute';
 
 export function generateStaticParams() {
@@ -10,12 +10,12 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export default async function ConsumerPdfJobPage({
+export default function ConsumerPdfJobPage({
   params,
 }: {
   params: Promise<{ token: string; jobId: string }>;
 }) {
-  const { token, jobId } = await params;
+  const { token, jobId } = use(params);
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#EDF1FA]" />}>
       <ConsumerPdfRoute token={token} jobId={jobId} />

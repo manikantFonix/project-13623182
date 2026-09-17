@@ -15,13 +15,13 @@ import {
   ROWS,
   TOPUP_ROWS,
   activeCount,
-  atZeroCount,
   cancellingCount,
   consumedTotal,
+  expiredCount,
   filterRows,
+  inactiveCount,
   sortAnnouncement,
   sortRows,
-  trialCount,
   type SortKey,
   type SortState,
   type SubsState,
@@ -80,9 +80,9 @@ export default function SubscriptionsOversight() {
 
   const summary = {
     active: activeCount(ROWS),
-    trial: trialCount(ROWS),
+    inactive: inactiveCount(ROWS),
+    expired: expiredCount(ROWS),
     cancelling: cancellingCount(ROWS),
-    atZero: atZeroCount(ROWS),
     consumed: consumedTotal(ROWS),
   };
 
@@ -110,9 +110,9 @@ export default function SubscriptionsOversight() {
           <>
             <SubsSummary
               active={summary.active}
-              trial={summary.trial}
+              inactive={summary.inactive}
+              expired={summary.expired}
               cancelling={summary.cancelling}
-              atZero={summary.atZero}
               consumed={summary.consumed}
             />
 

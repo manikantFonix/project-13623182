@@ -7,8 +7,8 @@ export default function RecomputeVerdict({ estimate }: { estimate: Estimate }) {
   const labourOnly = labourOnlyChange(estimate);
 
   const cause = labourOnly
-    ? `Metal and stones are unchanged and only labor moved, so ${estimate.retailer}'s bench rate is the likely cause — the audit trail under Settings records the platform alternative.`
-    : `Either the platform configuration or ${estimate.retailer}'s bench rate changed since it ran — the audit trail under Settings records a platform change, and a bench rate sits on that retailer's widget settings.`;
+    ? `Metal and stones are unchanged and only labor moved, so ${estimate.retailer}'s bench rate is the likely cause — Activity under Settings records the platform alternative.`
+    : `Either the platform configuration or ${estimate.retailer}'s bench rate changed since it ran — Activity under Settings records a platform change, and a bench rate sits on that retailer's widget settings.`;
 
   return (
     <div

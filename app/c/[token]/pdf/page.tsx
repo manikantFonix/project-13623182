@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { use, Suspense } from 'react';
 import ConsumerPdfRoute from '../../../../components/consumer-pdf/ConsumerPdfRoute';
 
 export function generateStaticParams() {
@@ -7,12 +7,12 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export default async function ConsumerPdfPage({
+export default function ConsumerPdfPage({
   params,
 }: {
   params: Promise<{ token: string }>;
 }) {
-  const { token } = await params;
+  const { token } = use(params);
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#EDF1FA]" />}>
       <ConsumerPdfRoute token={token} />

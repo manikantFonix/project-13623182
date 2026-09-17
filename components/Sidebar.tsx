@@ -35,7 +35,10 @@ export default function Sidebar() {
 
   useEffect(() => {
     setUnreadCount(getUnreadCount());
-    return subscribe(() => setUnreadCount(getUnreadCount()));
+    const unsub = subscribe(() => setUnreadCount(getUnreadCount()));
+    return () => {
+      unsub();
+    };
   }, []);
 
   useEffect(() => {

@@ -164,7 +164,7 @@ export default function CatalogPage({ catalogs, onCreated }: Props) {
       <NewCatalogDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
-        onCreated={(newCat) => onCreated({ ...newCat, image: '' })}
+        onCreated={onCreated}
       />
     </div>
   );
