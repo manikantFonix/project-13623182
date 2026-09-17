@@ -86,7 +86,7 @@ export default function CoverImagesSection({ state }: { state: CoverState }) {
     probe.src = url;
   };
 
-  const selectImage = (id: string) => {
+  const useImage = (id: string) => {
     setLiveId(id);
     setAnnounce('Cover image updated.');
   };
@@ -127,7 +127,7 @@ export default function CoverImagesSection({ state }: { state: CoverState }) {
             url={img.url}
             index={i + 1}
             live={img.id === liveId}
-            onUse={() => selectImage(img.id)}
+            onUse={() => useImage(img.id)}
             onRemove={() => removeImage(img.id)}
           />
         ))}
