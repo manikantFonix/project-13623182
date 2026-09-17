@@ -10,11 +10,7 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export default async function CatalogPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function CatalogPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!CATALOG_IDS.includes(id)) {
     notFound();

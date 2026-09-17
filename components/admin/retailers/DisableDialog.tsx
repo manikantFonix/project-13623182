@@ -38,7 +38,7 @@ export default function DisableDialog({
         tabIndex={-1}
         className="text-[18px] font-semibold text-[var(--text)] focus:outline-none"
       >
-        Disable {name}?
+        Mark {name} as inactive?
       </h2>
       <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--text-sec)]">
         Everything they have published goes offline in front of their own customers.
@@ -99,13 +99,13 @@ export default function DisableDialog({
         />
         <p id={hintId} className="mt-1.5 text-[12px] leading-relaxed text-[var(--text-sec)]">
           {blocked
-            ? 'Disabling is unavailable until a reason is given.'
+            ? 'Marking as inactive is unavailable until a reason is given.'
             : 'Recorded against your administrator account.'}
         </p>
       </div>
 
       <div aria-live="polite" className="sr-only">
-        {submitting ? 'Disabling this account' : ''}
+        {submitting ? 'Marking this account as inactive' : ''}
       </div>
 
       <div className="mt-6 flex items-center justify-end gap-3">
@@ -122,7 +122,7 @@ export default function DisableDialog({
           type="button"
           onClick={() => onConfirm(trimmed)}
           disabled={blocked || submitting}
-          aria-label={blocked ? 'Disable account — add a reason to enable disabling' : 'Disable account'}
+          aria-label={blocked ? 'Mark as inactive — add a reason first' : 'Mark as inactive'}
           aria-describedby={blocked ? hintId : undefined}
           className={`h-9 px-4 rounded-full border bg-[var(--surface)] text-[13px] font-medium whitespace-nowrap transition-colors duration-150 ${focusRing} ${
             blocked || submitting
@@ -130,7 +130,7 @@ export default function DisableDialog({
               : 'border-[var(--alert)] text-[var(--alert)] hover:bg-[var(--alert)]/10'
           }`}
         >
-          Disable account
+          Mark as inactive
         </button>
       </div>
     </RetailerDialog>

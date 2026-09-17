@@ -23,7 +23,7 @@ const options: { value: PlansPreview; label: string }[] = [
   { value: 'archive', label: 'Archive confirmation' },
   { value: 'archive-zero', label: 'Archive — zero subscribers' },
   { value: 'restore', label: 'Restoring a plan' },
-  { value: 'topup', label: 'Editing a top-up price' },
+  { value: 'topup', label: 'Editing a top-up pack' },
   { value: 'saving', label: 'Saving' },
   { value: 'save-failed', label: 'Save failed' },
   { value: 'loading', label: 'Loading' },

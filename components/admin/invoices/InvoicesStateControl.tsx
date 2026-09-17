@@ -7,11 +7,6 @@ import type { InvoicesPreview } from './data';
 const options: { value: InvoicesPreview; label: string }[] = [
   { value: 'populated', label: 'Populated' },
   { value: 'no-match', label: 'Filtered to nothing' },
-  { value: 'refund-sub', label: 'Refund — subscription' },
-  { value: 'refund-topup', label: 'Refund — top-up, renders spent' },
-  { value: 'refund-noreason', label: 'Refund — no reason yet' },
-  { value: 'refund-submitting', label: 'Refund submitting' },
-  { value: 'refund-failed', label: 'Refund failed' },
   { value: 'loading', label: 'Loading' },
   { value: 'error', label: 'Error' },
 ];

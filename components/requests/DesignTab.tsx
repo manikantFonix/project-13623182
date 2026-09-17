@@ -61,6 +61,7 @@ export default function DesignTab({ req, canSwitch, customerSet, onShare, onShar
   const [frontStage, setFrontStage] = useState(0);
   const [angleStage, setAngleStage] = useState(0);
   const [refineOpen, setRefineOpen] = useState(false);
+  const [anglesOpen, setAnglesOpen] = useState(false);
 
   const locked = !canSwitch || preview === 'locked';
   const frontRunning = phase === 'generating-front';
@@ -177,6 +178,7 @@ export default function DesignTab({ req, canSwitch, customerSet, onShare, onShar
       case 'angles-confirm':
         setPhase('front-only');
         setAvailable(['front']);
+        setAnglesOpen(true);
         break;
     }
   };

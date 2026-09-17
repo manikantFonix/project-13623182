@@ -1,9 +1,9 @@
 export type RetailerStatus = 'active' | 'awaiting' | 'disabled';
-export type PlanId = 'starter' | 'atelier' | 'maison' | 'bespoke';
+export type PlanId = 'starter' | 'pro' | 'business';
 export type RetailersState = 'populated' | 'no-match' | 'loading' | 'error';
 export const RETAILERS_PAGE_SIZE = 8;
 export type StatusFilter = 'all' | RetailerStatus;
-export type PlanFilter = 'all' | PlanId;
+export type PlanFilter = 'all' | 'free-trial' | PlanId;
 export type PillTone = 'neutral' | 'success' | 'alert';
 export type DetailVariant = 'active' | 'awaiting' | 'disabled' | 'no-catalogs' | 'no-widget';
 
@@ -17,18 +17,17 @@ export interface PlanMeta {
 }
 
 export const PLANS: Record<PlanId, PlanMeta> = {
-  starter: { id: 'starter', label: 'Starter', price: '$49', period: 'per month', allowance: 300, renewal: '1 September 2026' },
-  atelier: { id: 'atelier', label: 'Atelier', price: '$149', period: 'per month', allowance: 1200, renewal: '1 September 2026' },
-  maison: { id: 'maison', label: 'Maison', price: '$399', period: 'per month', allowance: 4000, renewal: '1 September 2026' },
-  bespoke: { id: 'bespoke', label: 'Bespoke', price: '$899', period: 'per month', allowance: 12000, renewal: '1 September 2026' },
+  starter: { id: 'starter', label: 'Starter', price: '$149', period: 'per month', allowance: 300, renewal: '1 September 2026' },
+  pro: { id: 'pro', label: 'Pro', price: '$349', period: 'per month', allowance: 1200, renewal: '1 September 2026' },
+  business: { id: 'business', label: 'Business', price: '$749', period: 'per month', allowance: 3500, renewal: '1 September 2026' },
 };
 
-export const planOrder: PlanId[] = ['starter', 'atelier', 'maison', 'bespoke'];
+export const planOrder: PlanId[] = ['starter', 'pro', 'business'];
 
 export const statusLabels: Record<RetailerStatus, string> = {
   active: 'Active',
-  awaiting: 'Awaiting a plan',
-  disabled: 'Disabled',
+  awaiting: 'Free Trial',
+  disabled: 'Inactive',
 };
 
 export const statusTone: Record<RetailerStatus, PillTone> = {
@@ -46,6 +45,7 @@ export interface Retailer {
   signedUp: string;
   lastActivity: string;
   lastActiveMins: number;
+  nextBilling: string;
   catalogs: number;
   balance: number;
   createdBy: string;
@@ -54,18 +54,18 @@ export interface Retailer {
 }
 
 const RAW: Retailer[] = [
-  { id: 'verity', name: 'Verity Jewels', email: 'studio@verityjewels.com', status: 'disabled', plan: 'maison', signedUp: '4 March 2024', lastActivity: '3 days ago', lastActiveMins: 4320, catalogs: 3, balance: 0, createdBy: 'Self-registered', origin: 'verityjewels.com', hasWidget: true },
-  { id: 'hallam', name: 'Hallam & Finch', email: 'hello@hallamfinch.co.uk', status: 'disabled', plan: 'atelier', signedUp: '18 June 2024', lastActivity: '19 days ago', lastActiveMins: 27360, catalogs: 2, balance: 86, createdBy: 'Self-registered', origin: 'hallamfinch.co.uk', hasWidget: true },
-  { id: 'bright', name: 'Bright & Stone', email: 'workshop@brightandstone.co', status: 'active', plan: 'starter', signedUp: '9 July 2026', lastActivity: '2 days ago', lastActiveMins: 2880, catalogs: 0, balance: 0, createdBy: 'ops@craftsmanai.com', origin: 'brightandstone.co', hasWidget: true },
-  { id: 'corderie', name: 'La Corderie', email: 'atelier@lacorderie.fr', status: 'awaiting', plan: null, signedUp: '1 August 2026', lastActivity: '5 days ago', lastActiveMins: 7200, catalogs: 0, balance: 0, createdBy: 'ops@craftsmanai.com', origin: 'lacorderie.fr', hasWidget: false },
-  { id: 'saintclair', name: 'Saint-Clair Joailliers', email: 'bonjour@saintclair.fr', status: 'awaiting', plan: null, signedUp: '4 August 2026', lastActivity: '6 days ago', lastActiveMins: 8640, catalogs: 1, balance: 0, createdBy: 'Self-registered', origin: 'saintclair.fr', hasWidget: false },
-  { id: 'pearl', name: 'Pearl & Vine', email: 'shop@pearlandvine.co.uk', status: 'awaiting', plan: null, signedUp: '22 July 2026', lastActivity: '12 days ago', lastActiveMins: 17280, catalogs: 0, balance: 0, createdBy: 'Self-registered', origin: 'pearlandvine.co.uk', hasWidget: false },
-  { id: 'lune', name: 'Lune Atelier', email: 'contact@luneatelier.fr', status: 'active', plan: 'bespoke', signedUp: '2 February 2024', lastActivity: '3 minutes ago', lastActiveMins: 3, catalogs: 5, balance: 88, createdBy: 'Self-registered', origin: 'luneatelier.fr', hasWidget: true },
-  { id: 'marchetti', name: 'Marchetti Fine Jewellery', email: 'info@marchetti.it', status: 'active', plan: 'maison', signedUp: '11 January 2024', lastActivity: '8 minutes ago', lastActiveMins: 8, catalogs: 4, balance: 640, createdBy: 'ops@craftsmanai.com', origin: 'marchetti.it', hasWidget: true },
-  { id: 'aurora', name: 'Aurora & Co', email: 'studio@aurora-co.com', status: 'active', plan: 'maison', signedUp: '5 November 2023', lastActivity: '12 minutes ago', lastActiveMins: 12, catalogs: 3, balance: 412, createdBy: 'Self-registered', origin: 'shop.aurora-co.com', hasWidget: true },
-  { id: 'ashford', name: 'Ashford & Vine', email: 'atelier@ashfordandvine.co.uk', status: 'active', plan: 'atelier', signedUp: '27 May 2024', lastActivity: '26 minutes ago', lastActiveMins: 26, catalogs: 6, balance: 210, createdBy: 'Self-registered', origin: 'ashfordandvine.co.uk', hasWidget: true },
-  { id: 'ravensworth', name: 'Ravensworth', email: 'hello@ravensworth.co.uk', status: 'active', plan: 'starter', signedUp: '16 September 2025', lastActivity: '40 minutes ago', lastActiveMins: 40, catalogs: 1, balance: 61, createdBy: 'nadia.rehman@craftsmanai.com', origin: 'ravensworth.co.uk', hasWidget: false },
-  { id: 'ortega', name: 'Ortega Goldsmiths', email: 'taller@ortega-goldsmiths.com', status: 'active', plan: 'atelier', signedUp: '9 July 2026', lastActivity: '3 hours ago', lastActiveMins: 180, catalogs: 2, balance: 2, createdBy: 'Self-registered', origin: 'ortega-goldsmiths.com', hasWidget: true },
+  { id: 'verity', name: 'Verity Jewels', email: 'studio@verityjewels.com', status: 'disabled', plan: 'business', signedUp: '4 March 2024', lastActivity: '3 days ago', lastActiveMins: 4320, nextBilling: '', catalogs: 3, balance: 0, createdBy: 'Self-registered', origin: 'verityjewels.com', hasWidget: true },
+  { id: 'hallam', name: 'Hallam & Finch', email: 'hello@hallamfinch.co.uk', status: 'disabled', plan: 'pro', signedUp: '18 June 2024', lastActivity: '19 days ago', lastActiveMins: 27360, nextBilling: '', catalogs: 2, balance: 86, createdBy: 'Self-registered', origin: 'hallamfinch.co.uk', hasWidget: true },
+  { id: 'bright', name: 'Bright & Stone', email: 'workshop@brightandstone.co', status: 'active', plan: 'starter', signedUp: '9 July 2026', lastActivity: '2 days ago', lastActiveMins: 2880, nextBilling: '9 October 2026', catalogs: 0, balance: 0, createdBy: 'ops@craftsmanai.com', origin: 'brightandstone.co', hasWidget: true },
+  { id: 'corderie', name: 'La Corderie', email: 'atelier@lacorderie.fr', status: 'awaiting', plan: null, signedUp: '1 August 2026', lastActivity: '5 days ago', lastActiveMins: 7200, nextBilling: '', catalogs: 0, balance: 0, createdBy: 'ops@craftsmanai.com', origin: 'lacorderie.fr', hasWidget: false },
+  { id: 'saintclair', name: 'Saint-Clair Joailliers', email: 'bonjour@saintclair.fr', status: 'awaiting', plan: null, signedUp: '4 August 2026', lastActivity: '6 days ago', lastActiveMins: 8640, nextBilling: '', catalogs: 1, balance: 0, createdBy: 'Self-registered', origin: 'saintclair.fr', hasWidget: false },
+  { id: 'pearl', name: 'Pearl & Vine', email: 'shop@pearlandvine.co.uk', status: 'awaiting', plan: null, signedUp: '22 July 2026', lastActivity: '12 days ago', lastActiveMins: 17280, nextBilling: '', catalogs: 0, balance: 0, createdBy: 'Self-registered', origin: 'pearlandvine.co.uk', hasWidget: false },
+  { id: 'lune', name: 'Lune Atelier', email: 'contact@luneatelier.fr', status: 'active', plan: 'business', signedUp: '2 February 2024', lastActivity: '3 minutes ago', lastActiveMins: 3, nextBilling: '2 October 2026', catalogs: 5, balance: 88, createdBy: 'Self-registered', origin: 'luneatelier.fr', hasWidget: true },
+  { id: 'marchetti', name: 'Marchetti Fine Jewellery', email: 'info@marchetti.it', status: 'active', plan: 'business', signedUp: '11 January 2024', lastActivity: '8 minutes ago', lastActiveMins: 8, nextBilling: '11 October 2026', catalogs: 4, balance: 640, createdBy: 'ops@craftsmanai.com', origin: 'marchetti.it', hasWidget: true },
+  { id: 'aurora', name: 'Aurora & Co', email: 'studio@aurora-co.com', status: 'active', plan: 'business', signedUp: '5 November 2023', lastActivity: '12 minutes ago', lastActiveMins: 12, nextBilling: '5 October 2026', catalogs: 3, balance: 412, createdBy: 'Self-registered', origin: 'shop.aurora-co.com', hasWidget: true },
+  { id: 'ashford', name: 'Ashford & Vine', email: 'atelier@ashfordandvine.co.uk', status: 'active', plan: 'pro', signedUp: '27 May 2024', lastActivity: '26 minutes ago', lastActiveMins: 26, nextBilling: '27 September 2026', catalogs: 6, balance: 210, createdBy: 'Self-registered', origin: 'ashfordandvine.co.uk', hasWidget: true },
+  { id: 'ravensworth', name: 'Ravensworth', email: 'hello@ravensworth.co.uk', status: 'active', plan: 'starter', signedUp: '16 September 2025', lastActivity: '40 minutes ago', lastActiveMins: 40, nextBilling: '16 September 2026', catalogs: 1, balance: 61, createdBy: 'nadia.rehman@craftsmanai.com', origin: 'ravensworth.co.uk', hasWidget: false },
+  { id: 'ortega', name: 'Ortega Goldsmiths', email: 'taller@ortega-goldsmiths.com', status: 'active', plan: 'pro', signedUp: '9 July 2026', lastActivity: '3 hours ago', lastActiveMins: 180, nextBilling: '9 October 2026', catalogs: 2, balance: 2, createdBy: 'Self-registered', origin: 'ortega-goldsmiths.com', hasWidget: true },
 ];
 
 const rank = (r: Retailer): number => (r.status === 'disabled' ? 0 : r.balance === 0 ? 1 : 2);
@@ -88,7 +88,8 @@ export function filterRetailers(
   return list.filter((r) => {
     if (term && !r.name.toLowerCase().includes(term) && !r.email.toLowerCase().includes(term)) return false;
     if (filters.status !== 'all' && r.status !== filters.status) return false;
-    if (filters.plan !== 'all' && r.plan !== filters.plan) return false;
+    if (filters.plan === 'free-trial' && r.plan !== null) return false;
+    if (filters.plan !== 'all' && filters.plan !== 'free-trial' && r.plan !== filters.plan) return false;
     return true;
   });
 }
@@ -118,6 +119,7 @@ export interface SubscriptionInfo {
   price: string;
   period: string;
   renewal: string;
+  nextBilling: string;
   allowance: number;
 }
 
@@ -235,7 +237,7 @@ export function getDetail(id: string, statusOverride?: RetailerStatus): Retailer
   return {
     retailer,
     subscription: plan
-      ? { planLabel: plan.label, price: plan.price, period: plan.period, renewal: plan.renewal, allowance: plan.allowance }
+      ? { planLabel: plan.label, price: plan.price, period: plan.period, renewal: plan.renewal, nextBilling: retailer.nextBilling, allowance: plan.allowance }
       : null,
     consumption: buildConsumption(retailer),
     catalogs: buildCatalogs(retailer),

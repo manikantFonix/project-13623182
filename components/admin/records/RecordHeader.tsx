@@ -1,20 +1,21 @@
 'use client';
 
-import RecordStatusPill from './RecordStatusPill';
 import RecordsAccessNotice from './RecordsAccessNotice';
-import { fmtDate, type RecordConfig, type RecordEntry } from './data';
+import { type RecordConfig, type RecordEntry } from './data';
 import { focusRing } from '../tokens';
 
 export default function RecordHeader({
   record,
   config,
   onBack,
+  onToggle,
 }: {
   record: RecordEntry;
   config: RecordConfig;
   onBack: () => void;
+  onToggle: () => void;
 }) {
-  const isManufacturer = record.kind === 'manufacturers';
+  const isActive = record.active ?? true;
 
   return (
     <header className="max-w-[1280px]">
@@ -29,24 +30,31 @@ export default function RecordHeader({
         All {config.countNoun}
       </button>
 
-      <div className="mt-3 max-w-[760px]">
-        <div className="flex flex-wrap items-center gap-3">
+      <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
+        <div className="max-w-[760px]">
           <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[var(--text)]">
             {record.name}
           </h1>
-          {isManufacturer && (
-            <RecordStatusPill tone={record.active ? 'success' : 'neutral'}>
-              {record.active ? 'Active' : 'Inactive'}
-            </RecordStatusPill>
-          )}
+          <p className="mt-1 text-[13px] text-[var(--text-sec)]">
+            Owned by <span className="font-medium text-[var(--text)]">{record.retailer}</span>
+          </p>
+          <RecordsAccessNotice />
         </div>
-        <p className="mt-1 text-[13px] text-[var(--text-sec)]">
-          Owned by <span className="font-medium text-[var(--text)]">{record.retailer}</span>
-        </p>
-        <p className="mt-2 text-[12px] tabular-nums text-[var(--muted-text)]">
-          Created {fmtDate(record.created)}
-        </p>
-        <RecordsAccessNotice />
+
+        {config.hasActive && (
+          <button
+            type="button"
+            onClick={onToggle}
+            aria-label={isActive ? 'Set to inactive' : 'Set to active'}
+            className={`h-9 px-4 rounded-full text-[13px] font-medium whitespace-nowrap cursor-pointer transition-colors duration-150 ${focusRing} ${
+              isActive
+                ? 'border border-[var(--success)] bg-[var(--surface)] text-[var(--success)] hover:bg-[var(--success-bg)]'
+                : 'border border-[var(--alert)] bg-[var(--surface)] text-[var(--alert)] hover:bg-[var(--alert)]/10'
+            }`}
+          >
+            {isActive ? 'Active' : 'Inactive'}
+          </button>
+        )}
       </div>
     </header>
   );

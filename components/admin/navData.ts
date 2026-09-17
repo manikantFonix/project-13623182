@@ -48,12 +48,6 @@ export const adminNav: AdminNavAreaDef[] = [
         count: widgetAttention,
         countLabel: `${widgetAttention} widgets need attention`,
       },
-      { label: 'Generation log', icon: 'ri-history-line', href: '/admin/generation-log' },
-      {
-        label: 'Estimate recompute',
-        icon: 'ri-calculator-line',
-        href: '/admin/estimate-recompute',
-      },
     ],
   },
   {
@@ -81,8 +75,9 @@ export const adminNav: AdminNavAreaDef[] = [
     children: [
       { label: 'Plans & top-ups', icon: 'ri-stack-line', href: '/admin/plans' },
       { label: 'Subscriptions', icon: 'ri-repeat-line', href: '/admin/subscriptions' },
-      { label: 'Invoices & refunds', icon: 'ri-file-list-3-line', href: '/admin/invoices' },
+      { label: 'Invoices', icon: 'ri-file-list-3-line', href: '/admin/invoices' },
       { label: 'Providers', icon: 'ri-plug-line', href: '/admin/providers' },
+      { label: 'Cancellations', icon: 'ri-user-unfollow-line', href: '/admin/cancellations' },
     ],
   },
   {
@@ -91,7 +86,6 @@ export const adminNav: AdminNavAreaDef[] = [
     icon: 'ri-settings-3-line',
     children: [
       { label: 'Prompts', icon: 'ri-chat-3-line', href: '/admin/prompts' },
-      { label: 'AI & system', icon: 'ri-cpu-line', href: '/admin/ai-system' },
       { label: 'Estimator', icon: 'ri-scales-3-line', href: '/admin/estimator' },
       { label: 'Audit trail', icon: 'ri-file-shield-2-line', href: '/admin/audit-trail' },
     ],

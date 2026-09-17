@@ -7,7 +7,7 @@ export default function RetailersNote() {
         <i className="ri-information-line text-[16px]" aria-hidden="true" />
       </span>
       <p className="text-[12px] leading-relaxed text-[var(--text-sec)]">
-        An account is disabled, never deleted. Enabling restores access but republishes nothing.
+        An account is marked inactive, never deleted. Reactivating restores access but republishes nothing.
       </p>
     </div>
   );

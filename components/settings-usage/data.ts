@@ -53,7 +53,7 @@ export interface Plan {
 }
 
 export const planData: Plan = {
-  name: 'Pro',
+  name: 'Starter',
   status: 'active',
   price: 149,
   interval: 'per month',
@@ -148,7 +148,7 @@ export interface Invoice {
   reference: string;
   date: string;
   amount: number;
-  status: 'Paid' | 'Failed' | 'Refunded';
+  status: 'Paid' | 'Failed';
 }
 
 export const invoicesData: Invoice[] = [
@@ -157,7 +157,7 @@ export const invoicesData: Invoice[] = [
   { reference: 'INV-0040', date: '12 January 2026', amount: 149, status: 'Paid' },
   { reference: 'INV-0035', date: '12 December 2025', amount: 149, status: 'Paid' },
   { reference: 'INV-0031', date: '12 November 2025', amount: 149, status: 'Paid' },
-  { reference: 'INV-0027', date: '12 October 2025', amount: 149, status: 'Refunded' },
+  { reference: 'INV-0027', date: '12 October 2025', amount: 149, status: 'Paid' },
 ];
 
 export interface CancelInfo {
@@ -196,7 +196,7 @@ export const billingActivityData: BillingActivity = {
   cardLast4: '2102',
   activityTitle: 'All your billing activity',
   activityCount: 10,
-  activitySubtitle: 'Invoice receipts, refunds and payment records.',
+  activitySubtitle: 'Invoice receipts and payment records.',
 };
 
 export interface ActivityEvent {
@@ -252,7 +252,7 @@ export const activityEventsData: ActivityEvent[] = [
   {
     icon: 'ri-refresh-line',
     event: 'Subscription renewed',
-    description: 'Your Pro plan renewed for another billing period.',
+    description: 'Your Starter plan renewed for another billing period.',
     at: '12 March 2026, 08:00',
     status: 'Completed',
     tone: 'success',

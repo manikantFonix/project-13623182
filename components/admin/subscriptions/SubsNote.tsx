@@ -7,6 +7,7 @@ export default function SubsNote() {
         <i className="ri-information-line text-[16px]" aria-hidden="true" />
       </span>
       <p className="text-[12px] leading-relaxed text-[var(--text-sec)]">
+        Retailers on a free trial use the same allowance but are not billed until the trial ends.
         Included allowance is spent before any top-up pack, oldest pack first. Bottlenecks names the
         retailers already at zero; this list shows the ones heading there.
       </p>

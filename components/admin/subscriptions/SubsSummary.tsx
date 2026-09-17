@@ -13,11 +13,13 @@ interface Tile {
 
 export default function SubsSummary({
   active,
+  trial,
   cancelling,
   atZero,
   consumed,
 }: {
   active: number;
+  trial: number;
   cancelling: number;
   atZero: number;
   consumed: number;
@@ -28,6 +30,16 @@ export default function SubsSummary({
       label: 'Active subscriptions',
       figure: fmtInt(active),
       note: 'Paying and inside their billing period.',
+      alert: false,
+    },
+    {
+      id: 'trial',
+      label: 'On free trial',
+      figure: fmtInt(trial),
+      note:
+        trial > 0
+          ? 'No charge yet. Billing starts when the trial ends.'
+          : 'Nobody is on a trial right now.',
       alert: false,
     },
     {
@@ -57,7 +69,7 @@ export default function SubsSummary({
   ];
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
       {tiles.map((tile) => (
         <div
           key={tile.id}

@@ -8,7 +8,7 @@ export default function GenerationNote() {
       </span>
       <p className="text-[12px] leading-relaxed text-[var(--text-sec)]">
         This is evidence: the prompt pinned at the time, the settings as sent, the images as
-        produced. A refund is a billing action under Subscriptions and Billing.
+        produced.
       </p>
     </div>
   );

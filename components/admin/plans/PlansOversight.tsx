@@ -21,7 +21,7 @@ type Modal =
   | { kind: 'edit'; planId: string }
   | { kind: 'archive'; planId: string; zero?: boolean }
   | { kind: 'restore'; planId: string }
-  | { kind: 'topup'; size: number };
+  | { kind: 'topup'; id: string };
 
 export default function PlansOversight() {
   const router = useRouter();
@@ -96,7 +96,7 @@ export default function PlansOversight() {
   const live = plans.filter((plan) => plan.status === 'live');
   const archived = plans.filter((plan) => plan.status === 'archived');
   const activePlan = modal && 'planId' in modal ? plans.find((p) => p.id === modal.planId) : undefined;
-  const activePack = modal?.kind === 'topup' ? topups.find((p) => p.size === modal.size) : undefined;
+  const activePack = modal?.kind === 'topup' ? topups.find((p) => p.id === modal.id) : undefined;
 
   const applyPreview = (next: PlansPreview) => {
     setSubmitting(false);
@@ -112,26 +112,26 @@ export default function PlansOversight() {
         setModal({ kind: 'create' });
         break;
       case 'edit':
-        setModal({ kind: 'edit', planId: 'studio' });
+        setModal({ kind: 'edit', planId: 'starter' });
         break;
       case 'archive':
-        setModal({ kind: 'archive', planId: 'studio' });
+        setModal({ kind: 'archive', planId: 'starter' });
         break;
       case 'archive-zero':
-        setModal({ kind: 'archive', planId: 'studio', zero: true });
+        setModal({ kind: 'archive', planId: 'starter', zero: true });
         break;
       case 'restore':
-        setModal({ kind: 'restore', planId: 'starter' });
+        setModal({ kind: 'restore', planId: 'free-trial' });
         break;
       case 'topup':
-        setModal({ kind: 'topup', size: 25 });
+        setModal({ kind: 'topup', id: 'pack-25' });
         break;
       case 'saving':
-        setModal({ kind: 'edit', planId: 'studio' });
+        setModal({ kind: 'edit', planId: 'starter' });
         setSubmitting(true);
         break;
       case 'save-failed':
-        setModal({ kind: 'edit', planId: 'studio' });
+        setModal({ kind: 'edit', planId: 'starter' });
         setFailed(true);
         break;
       default:
@@ -146,7 +146,7 @@ export default function PlansOversight() {
           Plans &amp; top-ups
         </h1>
         <p className="mt-1 text-[13px] leading-relaxed text-[var(--text-sec)]">
-          Every plan and top-up pack on the platform. Prices are editable; sizes and gating are not.
+          Every plan and top-up pack on the platform. Sizes and prices are editable; gating is not.
         </p>
         <p className="mt-2 text-[12px] text-[var(--muted-text)]">
           Plans are archived, never deleted. Gating is read-only.
@@ -216,9 +216,19 @@ export default function PlansOversight() {
             <section aria-label="Top-up products" className="mt-9">
               <SectionHeading
                 title="Top-up products"
-                purpose="Three fixed sizes. Only the price of a pack can be changed."
+                purpose="Three packs. Both the size and the price of a pack can be changed."
               />
-              <TopUpsTable packs={topups} onEdit={(size) => setModal({ kind: 'topup', size })} />
+              <TopUpsTable
+                packs={topups}
+                onEdit={(id) => setModal({ kind: 'topup', id })}
+                onToggle={(id) =>
+                  setTopups((prev) =>
+                    prev.map((pack) =>
+                      pack.id === id ? { ...pack, enabled: !pack.enabled } : pack
+                    )
+                  )
+                }
+              />
             </section>
 
             <div className="mt-10">
@@ -240,7 +250,6 @@ export default function PlansOversight() {
                   ...prev,
                   {
                     id: `plan-${prev.length + 1}`,
-                    status: 'live',
                     subscribers: 0,
                     features: ['bespoke'],
                     ...values,
@@ -315,13 +324,13 @@ export default function PlansOversight() {
           submitting={submitting}
           failed={failed}
           onCancel={closeModal}
-          onConfirm={(price) =>
+          onConfirm={(size, price) =>
             persist(
               () =>
                 setTopups((prev) =>
-                  prev.map((pack) => (pack.size === activePack.size ? { ...pack, price } : pack))
+                  prev.map((pack) => (pack.id === activePack.id ? { ...pack, size, price } : pack))
                 ),
-              `${activePack.size}-render price saved.`
+              `${activePack.size}-render pack saved.`
             )
           }
         />

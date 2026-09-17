@@ -19,7 +19,7 @@ export default function SubscriptionSection({ subscription }: { subscription: Su
     return (
       <RetailerSection title="Subscription" description="The plan this account is on.">
         <p className="text-[13px] leading-relaxed text-[var(--text-sec)]">
-          Awaiting a plan. No billing period, allowance or consumption yet.
+          Free Trial. No billing period, allowance or consumption yet.
         </p>
       </RetailerSection>
     );
@@ -35,6 +35,7 @@ export default function SubscriptionSection({ subscription }: { subscription: Su
         <Row label="Included allowance">
           <span className="tabular-nums">{fmt(subscription.allowance)}</span> renders
         </Row>
+        <Row label="Next billing date">{subscription.nextBilling}</Row>
         <Row label="Renews">{subscription.renewal}</Row>
       </dl>
     </RetailerSection>

@@ -155,7 +155,9 @@ export default function CustomerTab({
   onResume,
 }: Props) {
   const [scenario, setScenario] = useState<CustomerScenario>(() => defaultScenario(req).scenario);
-  const [customer, setCustomer] = useState<Customer | undefined>(req.customer);
+  const [customer, setCustomer] = useState<Customer | undefined>(
+    req.customer ? { id: 'c-req', ...req.customer } : undefined
+  );
   const [decision, setDecision] = useState<Request['decision'] | undefined>(req.decision);
   const [linkState, setLinkState] = useState<Request['linkState']>(req.linkState);
   const [sendOpen, setSendOpen] = useState(false);
@@ -388,7 +390,7 @@ export default function CustomerTab({
                   Shared on {sharedDate}
                 </p>
               </div>
-              {canChange && (scenario as string) === 'not-shared' && (
+              {(canChange as boolean) && (scenario as string) === 'not-shared' && (
                 <button
                   type="button"
                   onClick={onOpenPicker}

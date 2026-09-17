@@ -10,8 +10,10 @@ import SubsSkeleton from './SubsSkeleton';
 import SubsStateControl from './SubsStateControl';
 import SubsSummary from './SubsSummary';
 import SubsTable from './SubsTable';
+import SubsViewDialog from './SubsViewDialog';
 import {
   ROWS,
+  TOPUP_ROWS,
   activeCount,
   atZeroCount,
   cancellingCount,
@@ -19,12 +21,14 @@ import {
   filterRows,
   sortAnnouncement,
   sortRows,
+  trialCount,
   type SortKey,
   type SortState,
   type SubsState,
+  type SubView,
 } from './data';
 
-const DEFAULT_SORT: SortState = { key: 'burn', dir: 'desc' };
+const DEFAULT_SORT: SortState = { key: 'consumption', dir: 'desc' };
 
 export default function SubscriptionsOversight() {
   const [state, setState] = useState<SubsState>('populated');
@@ -32,9 +36,14 @@ export default function SubscriptionsOversight() {
   const [status, setStatus] = useState('all');
   const [plan, setPlan] = useState('all');
   const [sort, setSort] = useState<SortState>(DEFAULT_SORT);
+  const [selected, setSelected] = useState<SubView | null>(null);
 
   const filtered = useMemo(() => filterRows(ROWS, status, plan, query), [status, plan, query]);
   const sorted = useMemo(() => sortRows(filtered, sort), [filtered, sort]);
+  const rowsShown = useMemo(
+    () => (state === 'topUp' ? sortRows(TOPUP_ROWS, sort) : sorted),
+    [state, sort, sorted]
+  );
 
   const clearFilters = () => {
     setQuery('');
@@ -54,6 +63,10 @@ export default function SubscriptionsOversight() {
       setSort({ key: 'consumption', dir: 'desc' });
       return;
     }
+    if (next === 'topUp') {
+      setSort({ key: 'name', dir: 'asc' });
+      return;
+    }
     setSort(DEFAULT_SORT);
   };
 
@@ -67,6 +80,7 @@ export default function SubscriptionsOversight() {
 
   const summary = {
     active: activeCount(ROWS),
+    trial: trialCount(ROWS),
     cancelling: cancellingCount(ROWS),
     atZero: atZeroCount(ROWS),
     consumed: consumedTotal(ROWS),
@@ -96,6 +110,7 @@ export default function SubscriptionsOversight() {
           <>
             <SubsSummary
               active={summary.active}
+              trial={summary.trial}
               cancelling={summary.cancelling}
               atZero={summary.atZero}
               consumed={summary.consumed}
@@ -104,28 +119,34 @@ export default function SubscriptionsOversight() {
             <section aria-label="Every subscription" className="mt-8">
               <SectionHeading
                 title="Every retailer"
-                purpose="One row per subscription. Sort any column to reorder."
-                period={`${sorted.length} of ${ROWS.length} shown`}
+                purpose={
+                  state === 'topUp'
+                    ? 'Retailers whose included usage is used up and are now spending their top-up balance.'
+                    : 'One row per subscription. Sort any column to reorder.'
+                }
+                period={`${rowsShown.length} of ${ROWS.length} shown`}
               />
 
-              <SubsFilters
-                query={query}
-                onQuery={setQuery}
-                status={status}
-                onStatus={setStatus}
-                plan={plan}
-                onPlan={setPlan}
-                shown={filtered.length}
-                total={ROWS.length}
-              />
+              {state !== 'topUp' && (
+                <SubsFilters
+                  query={query}
+                  onQuery={setQuery}
+                  status={status}
+                  onStatus={setStatus}
+                  plan={plan}
+                  onPlan={setPlan}
+                  shown={filtered.length}
+                  total={ROWS.length}
+                />
+              )}
 
               <p aria-live="polite" className="sr-only">
                 {sortAnnouncement(sort)}
               </p>
 
               <div className="mt-3">
-                {sorted.length > 0 ? (
-                  <SubsTable rows={sorted} sort={sort} onSort={handleSort} />
+                {rowsShown.length > 0 ? (
+                  <SubsTable rows={rowsShown} sort={sort} onSort={handleSort} onView={setSelected} />
                 ) : (
                   <SubsNoMatch onClear={clearFilters} />
                 )}
@@ -140,6 +161,8 @@ export default function SubscriptionsOversight() {
       </div>
 
       <SubsStateControl state={state} onChange={applyState} />
+
+      {selected && <SubsViewDialog row={selected} onClose={() => setSelected(null)} />}
     </main>
   );
 }

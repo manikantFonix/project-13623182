@@ -51,7 +51,7 @@ export const PROVIDER_KEYS: ProviderKey[] = [
   {
     id: 'secret',
     label: 'Secret key',
-    purpose: 'Authenticates charges and refunds. Never displayed after entry.',
+    purpose: 'Authenticates charges. Never displayed after entry.',
     prefix: 'sk_live',
     tail: 'c21d',
     set: true,
@@ -73,7 +73,6 @@ export const PROVIDER_KEYS: ProviderKey[] = [
 export const PROVIDER_EVENTS: ProviderEvent[] = [
   { id: 'ev-9', type: 'invoice.paid', at: '2026-09-15 14:22', result: 'accepted' },
   { id: 'ev-8', type: 'customer.subscription.updated', at: '2026-09-15 13:05', result: 'accepted' },
-  { id: 'ev-7', type: 'charge.refunded', at: '2026-09-14 18:47', result: 'accepted' },
   { id: 'ev-6', type: 'invoice.payment_failed', at: '2026-09-14 09:12', result: 'accepted' },
   { id: 'ev-5', type: 'checkout.session.completed', at: '2026-09-13 16:30', result: 'accepted' },
   { id: 'ev-4', type: 'payment_intent.succeeded', at: '2026-09-13 11:04', result: 'accepted' },

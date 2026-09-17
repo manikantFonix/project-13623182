@@ -17,8 +17,8 @@ export type DetailPreview =
 
 const screenOptions: { value: DetailPreview; label: string }[] = [
   { value: 'active', label: 'Active' },
-  { value: 'awaiting', label: 'Awaiting a plan' },
-  { value: 'disabled', label: 'Disabled' },
+  { value: 'awaiting', label: 'Free Trial' },
+  { value: 'disabled', label: 'Inactive' },
   { value: 'no-catalogs', label: 'No catalogs' },
   { value: 'no-widget', label: 'No widget' },
   { value: 'loading', label: 'Loading' },
@@ -26,9 +26,9 @@ const screenOptions: { value: DetailPreview; label: string }[] = [
 ];
 
 const dialogOptions: { value: DetailPreview; label: string }[] = [
-  { value: 'disable', label: 'Disable dialog' },
-  { value: 'disable-submitting', label: 'Disable submitting' },
-  { value: 'enable', label: 'Enable dialog' },
+  { value: 'disable', label: 'Inactive dialog' },
+  { value: 'disable-submitting', label: 'Inactive submitting' },
+  { value: 'enable', label: 'Active dialog' },
 ];
 
 export default function RetailerDetailStateControl({

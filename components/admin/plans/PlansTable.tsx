@@ -23,24 +23,24 @@ function Row({
     <tr className="border-b border-[var(--muted)] last:border-b-0">
       <th scope="row" className="pl-5 pr-4 py-4 text-left align-top font-normal min-w-[180px]">
         <span className="block text-[13px] font-semibold text-[var(--text)]">{plan.name}</span>
-        <span className="mt-1 block">
+        <span className="mt-1 flex flex-wrap items-center gap-1.5">
           <PlanStatusPill archived={archived} />
+          {plan.popular && (
+            <span className="inline-flex h-6 items-center gap-1 rounded-full bg-[var(--amber-bg)] px-2.5 text-[12px] font-medium text-[var(--alert-strong)] whitespace-nowrap">
+              <i className="ri-star-fill text-[12px]" aria-hidden="true" />
+              Popular
+            </span>
+          )}
         </span>
       </th>
       <td className="px-4 py-4 align-top text-right text-[13px] tabular-nums whitespace-nowrap text-[var(--text)]">
         {fmtPlanPrice(plan.price)}
-      </td>
-      <td className="px-4 py-4 align-top text-[13px] whitespace-nowrap text-[var(--text-sec)]">
-        {plan.interval === 'month' ? 'Monthly' : 'Yearly'}
       </td>
       <td className="px-4 py-4 align-top text-right whitespace-nowrap">
         <span className="block text-[13px] tabular-nums text-[var(--text)]">
           {fmtInt(plan.allowance)}
         </span>
         <span className="mt-0.5 block text-[12px] text-[var(--text-sec)]">renders</span>
-      </td>
-      <td className="px-4 py-4 align-top text-right text-[13px] tabular-nums whitespace-nowrap text-[var(--text)]">
-        {fmtInt(plan.seats)}
       </td>
       <td className="px-4 py-4 align-top text-right whitespace-nowrap">
         <span className="block text-[13px] font-semibold tabular-nums text-[var(--text)]">
@@ -95,7 +95,7 @@ export default function PlansTable({
 }) {
   return (
     <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] overflow-x-auto">
-      <table className="w-full min-w-[1080px]">
+      <table className="w-full min-w-[820px]">
         <caption className="sr-only">{caption}</caption>
         <thead>
           <tr className="border-b border-[var(--border)]">
@@ -103,9 +103,7 @@ export default function PlansTable({
               Plan
             </th>
             <th scope="col" className={`${head} text-right`}>Price</th>
-            <th scope="col" className={`${head} text-left`}>Interval</th>
             <th scope="col" className={`${head} text-right`}>Base allowance</th>
-            <th scope="col" className={`${head} text-right`}>Seats</th>
             <th scope="col" className={`${head} text-right`}>Subscribers</th>
             <th scope="col" className="pl-4 pr-5 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--muted-text)]">
               <span className="sr-only">Action</span>

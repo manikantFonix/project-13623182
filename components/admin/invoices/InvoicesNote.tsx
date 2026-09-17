@@ -7,9 +7,8 @@ export default function InvoicesNote() {
         <i className="ri-information-line text-[16px]" aria-hidden="true" />
       </span>
       <div className="text-[12px] leading-relaxed text-[var(--text-sec)] flex flex-col gap-2">
-        <p>A refund does not restore renders. Renders already spent are not returned and no balance changes.</p>
+        <p>Every invoice can be opened in full or downloaded as a record.</p>
         <p>A failed payment is handled by the billing provider and the subscription lifecycle, not from here.</p>
-        <p>Refunds are issued through the payment provider. The platform never holds money itself.</p>
       </div>
     </div>
   );

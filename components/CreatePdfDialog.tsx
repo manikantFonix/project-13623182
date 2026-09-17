@@ -110,7 +110,7 @@ export default function CreatePdfDialog({
     });
   }, [baseProducts, search]);
 
-  const dropped: number = demo === 'dropped' ? 2 : 0;
+  const dropped = demo === 'dropped' ? 2 : 0;
   const shownIncluded = demo === 'dropped' ? Math.max(0, selectedCount - dropped) : selectedCount;
 
   useEffect(() => {
@@ -319,7 +319,7 @@ export default function CreatePdfDialog({
             {dropped > 0 && (
               <div className="border-l-2 border-[var(--alert)] pl-3 py-1">
                 <p className="text-[13px] text-[var(--alert)]">
-                  {dropped} {dropped === 1 ? 'piece' : 'pieces'} couldn't be included, so{' '}
+                  {dropped} {(dropped as number) === 1 ? 'piece' : 'pieces'} couldn't be included, so{' '}
                   {shownIncluded} of the {selectedCount} you chose are in the document.
                 </p>
               </div>
@@ -485,8 +485,8 @@ function SelectPhase({
           <p className="p-4 text-[13px] text-[var(--text-sec)]">No pieces match your search.</p>
         ) : (
           products.map((p) => {
-            const rKey = includeReason(p);
-            const reason = rKey === 'ok' ? null : reasonText[rKey];
+            const r = includeReason(p);
+            const reason = r === 'ok' ? null : (reasonText as Record<string, string>)[r];
             const disabled = capReached && !selected.has(p.id);
             const isChecked = selected.has(p.id);
             const dimmed = reason !== null || disabled;

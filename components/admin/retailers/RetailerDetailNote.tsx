@@ -7,8 +7,8 @@ export default function RetailerDetailNote() {
         <i className="ri-information-line text-[16px]" aria-hidden="true" />
       </span>
       <p className="text-[12px] leading-relaxed text-[var(--text-sec)]">
-        Disabling is immediate and there is no delete. There is no route to a consumer's details, by
-        design.
+        Marking an account inactive is immediate and there is no delete. There is no route to a
+        consumer's details, by design.
       </p>
     </div>
   );

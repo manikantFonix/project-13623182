@@ -13,11 +13,7 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export default async function QuoteJobPage({
-  params,
-}: {
-  params: Promise<{ token: string }>;
-}) {
+export default async function QuoteJobPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#EDF1FA]" />}>

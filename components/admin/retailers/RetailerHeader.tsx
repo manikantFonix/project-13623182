@@ -51,7 +51,7 @@ export default function RetailerHeader({
             onClick={onEnable}
             className={`h-9 px-4 rounded-full bg-[var(--accent)] text-[var(--on-accent)] text-[13px] font-medium whitespace-nowrap transition-colors duration-150 hover:bg-[var(--accent-hover)] ${focusRing}`}
           >
-            Enable account
+            Mark as active
           </button>
         ) : (
           <button
@@ -59,7 +59,7 @@ export default function RetailerHeader({
             onClick={onDisable}
             className={`h-9 px-4 rounded-full border border-[var(--alert)] bg-[var(--surface)] text-[13px] font-medium whitespace-nowrap text-[var(--alert)] transition-colors duration-150 hover:bg-[var(--alert)]/10 ${focusRing}`}
           >
-            Disable account
+            Mark as inactive
           </button>
         )}
       </div>

@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import RecordSection from './RecordSection';
-import RecordStatusPill from './RecordStatusPill';
+import RecordTagPill from './RecordTagPill';
 import { fmtDate, type RecordEntry } from './data';
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
@@ -14,7 +14,11 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-export default function RecordFacts({ record }: { record: RecordEntry }) {
+export default function RecordFacts({
+  record,
+}: {
+  record: RecordEntry;
+}) {
   const isManufacturer = record.kind === 'manufacturers';
 
   return (
@@ -26,17 +30,30 @@ export default function RecordFacts({ record }: { record: RecordEntry }) {
         <Row label="Name">
           <span className="break-words">{record.name}</span>
         </Row>
-        {isManufacturer && record.contact && (
-          <Row label="Contact name">
-            <span className="break-words">{record.contact}</span>
+        {!isManufacturer && record.tag && (
+          <Row label="Customer tag">
+            <RecordTagPill tag={record.tag} />
           </Row>
         )}
-        <Row label="Email">
-          <span className="break-all select-all">{record.email}</span>
-        </Row>
-        <Row label="Phone">
-          <span className="tabular-nums select-all">{record.phone}</span>
-        </Row>
+        {isManufacturer ? (
+          <Row label="Phone">
+            <span className="tabular-nums select-all">{record.phone}</span>
+          </Row>
+        ) : (
+          <Row label="Email">
+            <span className="break-all select-all">{record.email}</span>
+          </Row>
+        )}
+        {isManufacturer && (
+          <Row label="Email">
+            <span className="break-all select-all">{record.email}</span>
+          </Row>
+        )}
+        {!isManufacturer && (
+          <Row label="Phone">
+            <span className="tabular-nums select-all">{record.phone}</span>
+          </Row>
+        )}
         {isManufacturer ? (
           <>
             {record.specialty && (
@@ -49,11 +66,6 @@ export default function RecordFacts({ record }: { record: RecordEntry }) {
                 <span className="break-words">{record.location}</span>
               </Row>
             )}
-            <Row label="State">
-              <RecordStatusPill tone={record.active ? 'success' : 'neutral'}>
-                {record.active ? 'Active' : 'Inactive'}
-              </RecordStatusPill>
-            </Row>
           </>
         ) : (
           record.address && (

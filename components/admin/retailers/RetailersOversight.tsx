@@ -80,7 +80,7 @@ export default function RetailersOversight() {
             <section aria-label="Every retailer">
               <SectionHeading
                 title="Every retailer"
-                purpose="Disabled first, then zero balance."
+                purpose="Inactive first, then zero balance."
                 period={`${filtered.length} of ${RETAILERS.length} accounts`}
               />
 

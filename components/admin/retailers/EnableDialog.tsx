@@ -20,14 +20,14 @@ export default function EnableDialog({
   return (
     <RetailerDialog labelledBy="enable-title" onClose={onCancel} initialFocus={safeRef}>
       <h2 id="enable-title" className="text-[18px] font-semibold text-[var(--text)]">
-        Enable {name}?
+        Mark {name} as active?
       </h2>
       <p className="mt-2 text-[13px] leading-relaxed text-[var(--text-sec)]">
         Access is restored straight away. Catalogs stay unpublished. The retailer republishes them.
       </p>
 
       <div aria-live="polite" className="sr-only">
-        {submitting ? 'Enabling this account' : ''}
+        {submitting ? 'Marking this account as active' : ''}
       </div>
 
       <div className="mt-6 flex items-center justify-end gap-3">
@@ -38,7 +38,7 @@ export default function EnableDialog({
           disabled={submitting}
           className={`h-9 px-4 rounded-full border border-[var(--border-strong)] bg-[var(--surface)] text-[13px] font-medium text-[var(--text)] whitespace-nowrap transition-colors duration-150 hover:bg-[var(--muted)] disabled:opacity-50 disabled:cursor-default ${focusRing}`}
         >
-          Leave disabled
+          Leave inactive
         </button>
         <button
           type="button"
@@ -46,7 +46,7 @@ export default function EnableDialog({
           disabled={submitting}
           className={`h-9 px-4 rounded-full bg-[var(--accent)] text-[var(--on-accent)] text-[13px] font-medium whitespace-nowrap transition-colors duration-150 hover:bg-[var(--accent-hover)] disabled:opacity-50 disabled:cursor-default ${focusRing}`}
         >
-          Enable account
+          Mark as active
         </button>
       </div>
     </RetailerDialog>

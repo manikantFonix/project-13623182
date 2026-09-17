@@ -164,13 +164,7 @@ export default function CatalogPage({ catalogs, onCreated }: Props) {
       <NewCatalogDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
-        onCreated={(cat) =>
-          onCreated({
-            ...cat,
-            image:
-              'https://readdy.ai/api/search-image?query=Professional%20product%20photograph%20of%20a%20single%20elegant%20gold%20solitaire%20engagement%20ring&width=640&height=400&seq=1&orientation=landscape',
-          })
-        }
+        onCreated={(newCat) => onCreated({ ...newCat, image: '' })}
       />
     </div>
   );

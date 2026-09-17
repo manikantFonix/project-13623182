@@ -12,11 +12,7 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
-export default async function QuoteSubmitPage({
-  params,
-}: {
-  params: Promise<{ token: string }>;
-}) {
+export default async function QuoteSubmitPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
   return <QuoteFormRoute basePath={`/quote/${token}`} />;
 }

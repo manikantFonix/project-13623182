@@ -3,6 +3,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { focusRing } from '../tokens';
 
+export interface MenuOption {
+  value: string;
+  label: string;
+}
+
 export default function RecordMenu({
   label,
   value,
@@ -11,7 +16,7 @@ export default function RecordMenu({
 }: {
   label: string;
   value: string;
-  options: string[];
+  options: MenuOption[];
   onChange: (value: string) => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -33,7 +38,7 @@ export default function RecordMenu({
     };
   }, [open]);
 
-  const display = value === 'all' ? `All ${label.toLowerCase()}s` : value;
+  const display = options.find((option) => option.value === value)?.label ?? value;
 
   return (
     <div className="flex items-center gap-2">
@@ -58,16 +63,16 @@ export default function RecordMenu({
             aria-label={label}
             className="absolute z-40 mt-1 w-[240px] max-h-[320px] overflow-y-auto rounded-[12px] border border-[var(--border)] bg-[var(--surface)] p-1"
           >
-            {['all', ...options].map((option) => {
-              const active = option === value;
+            {options.map((option) => {
+              const active = option.value === value;
               return (
-                <li key={option}>
+                <li key={option.value}>
                   <button
                     type="button"
                     role="option"
                     aria-selected={active}
                     onClick={() => {
-                      onChange(option);
+                      onChange(option.value);
                       setOpen(false);
                     }}
                     className={`w-full h-8 px-3 rounded-[8px] flex items-center justify-between gap-2 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 ${focusRing} ${
@@ -76,9 +81,7 @@ export default function RecordMenu({
                         : 'text-[var(--text-sec)] hover:bg-[var(--muted)] hover:text-[var(--text)]'
                     }`}
                   >
-                    <span className="truncate">
-                      {option === 'all' ? `All ${label.toLowerCase()}s` : option}
-                    </span>
+                    <span className="truncate">{option.label}</span>
                     {active && (
                       <span className="w-4 h-4 flex items-center justify-center shrink-0">
                         <i className="ri-check-line text-[15px]" aria-hidden="true" />

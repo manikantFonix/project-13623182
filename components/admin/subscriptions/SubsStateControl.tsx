@@ -8,7 +8,7 @@ const options: { value: SubsState; label: string }[] = [
   { value: 'populated', label: 'Populated' },
   { value: 'noMatch', label: 'Filtered to nothing' },
   { value: 'sortConsumption', label: 'Sorted by consumption' },
-  { value: 'sortBurn', label: 'Sorted by burn rate' },
+  { value: 'topUp', label: 'Included used up · on top-up' },
   { value: 'loading', label: 'Loading' },
   { value: 'error', label: 'Error' },
 ];

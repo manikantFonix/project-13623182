@@ -15,7 +15,7 @@ export default function GenerationReference() {
         </p>
       </div>
       <p className="max-w-[320px] text-[12px] leading-relaxed text-[var(--muted-text)]">
-        Nothing here can be re-run, regenerated, refunded or corrected.
+        Nothing here can be re-run, regenerated or corrected.
       </p>
     </div>
   );

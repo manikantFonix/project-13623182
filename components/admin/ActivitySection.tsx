@@ -15,14 +15,14 @@ export default function ActivitySection({
   return (
     <div className="grid gap-3 lg:grid-cols-2">
       <MetricColumn
-        title="Phase 1 · Bespoke design"
+        title="Bespoke design"
         subtitle="A piece designed from a description and quoted one at a time."
         rows={phase1}
         period={period}
         tone="strong"
       />
       <MetricColumn
-        title="Phase 2 · Catalogs"
+        title="Catalogs"
         subtitle="A retailer's existing stock ingested and published for browsing."
         rows={phase2}
         period={period}

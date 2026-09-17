@@ -11,7 +11,6 @@ interface Props {
 const statusColor: Record<Invoice['status'], string> = {
   Paid: 'text-[var(--success)]',
   Failed: 'text-[var(--alert)]',
-  Refunded: 'text-[var(--text-sec)]',
 };
 
 export default function InvoicesCard({ invoices, hasMore, empty }: Props) {

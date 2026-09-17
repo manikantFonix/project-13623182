@@ -22,17 +22,6 @@ export default function AdminSidebar() {
           ))}
         </ul>
       </nav>
-
-      <div className="px-5 py-4 border-t border-[var(--nav-line)] bg-[var(--nav-wash)]">
-        <div className="flex items-start gap-2.5">
-          <span className="mt-0.5 w-4 h-4 flex items-center justify-center shrink-0 text-[var(--on-accent-muted)]">
-            <i className="ri-lock-2-line text-[13px]" aria-hidden="true" />
-          </span>
-          <p className="text-[12px] leading-relaxed text-[var(--on-accent-muted)]">
-            Every administrator has full access. There are no sub-roles.
-          </p>
-        </div>
-      </div>
     </aside>
   );
 }

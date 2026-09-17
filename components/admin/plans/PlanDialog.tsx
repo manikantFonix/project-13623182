@@ -2,18 +2,31 @@
 
 import { useRef, useState } from 'react';
 import PlansDialog from './PlansDialog';
+import PlanToggle from './PlanToggle';
+import PlanPointsField from './PlanPointsField';
+import PlanAccessField from './PlanAccessField';
 import { focusRing } from '../tokens';
-import { intervalLabel, type BillingInterval, type Plan } from './data';
+import {
+  type AccessKey,
+  type Plan,
+  type PlanStatus,
+} from './data';
 
 const inputClass = `mt-1.5 w-full h-9 rounded-full border border-[var(--border)] bg-[var(--muted)] px-3 text-[13px] text-[var(--text)] placeholder:text-[var(--muted-text)] transition-colors duration-150 ${focusRing}`;
 const labelClass = 'block text-[12px] font-semibold text-[var(--text)]';
+const sectionClass = 'mt-5 border-t border-[var(--border)] pt-5';
+const sectionTitle = 'text-[13px] font-semibold text-[var(--text)]';
+const sectionHint = 'mt-1 text-[12px] leading-relaxed text-[var(--text-sec)]';
 
 export interface PlanValues {
   name: string;
+  description: string;
   price: number;
-  interval: BillingInterval;
   allowance: number;
-  seats: number;
+  popular: boolean;
+  points: string[];
+  access: AccessKey[];
+  status: PlanStatus;
 }
 
 export default function PlanDialog({
@@ -32,24 +45,22 @@ export default function PlanDialog({
   const safeRef = useRef<HTMLButtonElement>(null);
   const editing = Boolean(plan);
   const [name, setName] = useState(plan?.name ?? '');
+  const [description, setDescription] = useState(plan?.description ?? '');
   const [price, setPrice] = useState(plan ? String(plan.price) : '');
-  const [interval, setInterval] = useState<BillingInterval>(plan?.interval ?? 'month');
   const [allowance, setAllowance] = useState(plan ? String(plan.allowance) : '');
-  const [seats, setSeats] = useState(plan ? String(plan.seats) : '');
+  const [popular, setPopular] = useState(Boolean(plan?.popular));
+  const [points, setPoints] = useState<string[]>(plan?.points ?? ['']);
+  const [access, setAccess] = useState<AccessKey[]>(plan?.access ?? []);
+  const [status, setStatus] = useState<PlanStatus>(plan?.status ?? 'live');
 
   const parsedPrice = Number(price);
   const parsedAllowance = Number(allowance);
-  const parsedSeats = Number(seats);
   const valid =
     name.trim().length > 0 &&
     Number.isFinite(parsedPrice) &&
     parsedPrice > 0 &&
     Number.isFinite(parsedAllowance) &&
-    parsedAllowance > 0 &&
-    Number.isFinite(parsedSeats) &&
-    parsedSeats > 0;
-
-  const intervalWord = interval === 'month' ? 'per month' : 'per year';
+    parsedAllowance > 0;
 
   return (
     <PlansDialog labelledBy="plan-dialog-title" onClose={onCancel} initialFocus={safeRef}>
@@ -59,7 +70,7 @@ export default function PlanDialog({
       <p className="mt-1.5 text-[12px] text-[var(--text-sec)]">
         {editing
           ? 'Changes apply to new subscribers. Existing subscribers keep their terms.'
-          : 'A new plan a retailer can be put on. Gating is set outside this screen.'}
+          : 'A new plan a retailer can be put on. Set its price, what it includes and what it unlocks.'}
       </p>
 
       <div className="mt-5 grid grid-cols-2 gap-4">
@@ -78,9 +89,24 @@ export default function PlanDialog({
           />
         </div>
 
+        <div className="col-span-2">
+          <label htmlFor="plan-description" className={labelClass}>
+            Description
+          </label>
+          <textarea
+            id="plan-description"
+            rows={3}
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            disabled={submitting}
+            placeholder="Who this plan is for and what it covers."
+            className={`mt-1.5 w-full rounded-[12px] border border-[var(--border)] bg-[var(--muted)] px-3 py-2.5 text-[13px] leading-relaxed text-[var(--text)] placeholder:text-[var(--muted-text)] resize-none transition-colors duration-150 ${focusRing}`}
+          />
+        </div>
+
         <div>
           <label htmlFor="plan-price" className={labelClass}>
-            Price (USD, {intervalWord})
+            Price (USD, per month)
           </label>
           <input
             id="plan-price"
@@ -91,31 +117,6 @@ export default function PlanDialog({
             disabled={submitting}
             className={inputClass}
           />
-        </div>
-
-        <div>
-          <span className={labelClass}>Billing interval</span>
-          <div className="mt-1.5 flex gap-1 p-1 rounded-full bg-[var(--muted)]">
-            {(['month', 'year'] as BillingInterval[]).map((value) => {
-              const active = interval === value;
-              return (
-                <button
-                  key={value}
-                  type="button"
-                  aria-pressed={active}
-                  disabled={submitting}
-                  onClick={() => setInterval(value)}
-                  className={`flex-1 h-7 rounded-full text-[13px] font-medium whitespace-nowrap transition-colors duration-150 ${focusRing} ${
-                    active
-                      ? 'bg-[var(--accent)] text-[var(--on-accent)]'
-                      : 'text-[var(--text-sec)] hover:text-[var(--text)]'
-                  }`}
-                >
-                  {intervalLabel(value)}
-                </button>
-              );
-            })}
-          </div>
         </div>
 
         <div>
@@ -132,20 +133,71 @@ export default function PlanDialog({
             className={inputClass}
           />
         </div>
+      </div>
 
-        <div>
-          <label htmlFor="plan-seats" className={labelClass}>
-            Seats
-          </label>
-          <input
-            id="plan-seats"
-            type="number"
-            min="1"
-            value={seats}
-            onChange={(event) => setSeats(event.target.value)}
-            disabled={submitting}
-            className={inputClass}
-          />
+      <div className={sectionClass}>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <span className={sectionTitle}>Mark as popular</span>
+            <p className={sectionHint}>
+              Highlights this plan on the pricing screen as the recommended tier.
+            </p>
+          </div>
+          <div className="mt-2 shrink-0">
+            <PlanToggle
+              checked={popular}
+              onChange={setPopular}
+              label="Mark as popular"
+              disabled={submitting}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className={sectionClass}>
+        <span className={sectionTitle}>Feature points</span>
+        <p className={sectionHint}>The bullets a retailer sees on this plan.</p>
+        <div className="mt-3">
+          <PlanPointsField points={points} onChange={setPoints} disabled={submitting} />
+        </div>
+      </div>
+
+      <div className={sectionClass}>
+        <span className={sectionTitle}>Plan access options</span>
+        <p className={sectionHint}>What this plan unlocks for the retailer.</p>
+        <div className="mt-3">
+          <PlanAccessField access={access} onChange={setAccess} disabled={submitting} />
+        </div>
+      </div>
+
+      <div className={sectionClass}>
+        <span className={sectionTitle}>Status</span>
+        <p className={sectionHint}>Inactive plans stay hidden from new retailers.</p>
+        <div className="mt-3 flex gap-1 p-1 rounded-full bg-[var(--muted)] w-[280px]">
+          {(
+            [
+              { value: 'live' as PlanStatus, label: 'Active' },
+              { value: 'archived' as PlanStatus, label: 'Inactive' },
+            ]
+          ).map((option) => {
+            const active = status === option.value;
+            return (
+              <button
+                key={option.value}
+                type="button"
+                aria-pressed={active}
+                disabled={submitting}
+                onClick={() => setStatus(option.value)}
+                className={`flex-1 h-7 rounded-full text-[13px] font-medium whitespace-nowrap transition-colors duration-150 ${focusRing} ${
+                  active
+                    ? 'bg-[var(--accent)] text-[var(--on-accent)]'
+                    : 'text-[var(--text-sec)] hover:text-[var(--text)]'
+                }`}
+              >
+                {option.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -173,10 +225,13 @@ export default function PlanDialog({
           onClick={() =>
             onConfirm({
               name: name.trim(),
+              description: description.trim(),
               price: parsedPrice,
-              interval,
               allowance: parsedAllowance,
-              seats: parsedSeats,
+              popular,
+              points: points.map((point) => point.trim()).filter(Boolean),
+              access,
+              status,
             })
           }
           disabled={!valid || submitting}

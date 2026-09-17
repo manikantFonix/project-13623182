@@ -1,7 +1,8 @@
 'use client';
 
 import RecordSection from './RecordSection';
-import { fmtDate, type RecordConfig, type RecordEntry } from './data';
+import RecordStatusPill from './RecordStatusPill';
+import { fmtDate, requestOutcomeTone, requestStatusTone, type RecordConfig, type RecordEntry } from './data';
 
 const th = 'py-2.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--muted-text)]';
 
@@ -43,8 +44,16 @@ export default function RecordRequests({
                   <td className="py-2.5 pl-4 text-left align-middle text-[13px] text-[var(--text-sec)]">
                     {request.piece}
                   </td>
-                  <td className="py-2.5 pl-4 text-left align-middle text-[13px] text-[var(--text)] whitespace-nowrap">
-                    {isManufacturer ? request.outcome : request.status}
+                  <td className="py-2.5 pl-4 text-left align-middle whitespace-nowrap">
+                    {isManufacturer ? (
+                      <RecordStatusPill tone={requestOutcomeTone(request.outcome ?? '')}>
+                        {request.outcome ?? ''}
+                      </RecordStatusPill>
+                    ) : (
+                      <RecordStatusPill tone={requestStatusTone(request.status)}>
+                        {request.status}
+                      </RecordStatusPill>
+                    )}
                   </td>
                   <td className="py-2.5 pl-4 text-right align-middle text-[12px] tabular-nums text-[var(--text-sec)] whitespace-nowrap">
                     {fmtDate(request.date)}

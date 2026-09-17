@@ -23,6 +23,7 @@ import {
   type ActiveFilter,
   type DetailVariantId,
   type RecordConfig,
+  type RecordEntry,
   type RecordKind,
   type RecordState,
   type RecordsPreview,
@@ -42,9 +43,17 @@ export default function RecordsOversight({ kind }: { kind: RecordKind }) {
   const [retailer, setRetailer] = useState('all');
   const [active, setActive] = useState<ActiveFilter>('all');
   const [page, setPage] = useState(1);
+  const [records, setRecords] = useState<RecordEntry[]>(RECORDS[kind]);
 
-  const records = RECORDS[kind];
   const routeId = search.get('record');
+
+  const toggleActive = (id: string) => {
+    setRecords((prev) =>
+      prev.map((record) =>
+        record.id === id ? { ...record, active: !(record.active ?? true) } : record
+      )
+    );
+  };
 
   useEffect(() => {
     if (routeId) setPreview('route');
@@ -108,16 +117,21 @@ export default function RecordsOversight({ kind }: { kind: RecordKind }) {
   const totalPages = Math.max(1, Math.ceil(filtered.length / RECORDS_PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
   const visible = filtered.slice((currentPage - 1) * RECORDS_PAGE_SIZE, currentPage * RECORDS_PAGE_SIZE);
+  const detailRecord =
+    resolved.mode === 'detail' && resolved.id
+      ? records.find((record) => record.id === resolved.id)
+      : undefined;
 
   return (
     <>
       {resolved.mode === 'detail' ? (
         <RecordDetail
           kind={kind}
-          recordId={resolved.id}
+          record={detailRecord}
           state={resolved.state}
           onBack={closeDetail}
           onRetry={retryDetail}
+          onToggle={toggleActive}
         />
       ) : (
         <main className="max-w-[1440px] mx-auto px-8 py-8 pb-24">
@@ -168,7 +182,7 @@ export default function RecordsOversight({ kind }: { kind: RecordKind }) {
                         onClear={clearFilters}
                       />
                     ) : (
-                      <RecordsTable records={visible} config={config} />
+                      <RecordsTable records={visible} config={config} onToggle={toggleActive} />
                     )}
                   </div>
 

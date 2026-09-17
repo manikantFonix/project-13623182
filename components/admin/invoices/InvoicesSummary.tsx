@@ -40,7 +40,7 @@ function Tile({
 
 export default function InvoicesSummary({ summary }: { summary: Summary }) {
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <div className="grid grid-cols-3 gap-4">
       <Tile label="Invoiced this period" value={fmtMoney(summary.invoiced)} sub="All invoices issued" />
       <Tile label="Paid" value={fmtMoney(summary.paid)} sub="Settled in full or in part" />
       <Tile
@@ -49,7 +49,6 @@ export default function InvoicesSummary({ summary }: { summary: Summary }) {
         sub={summary.failed > 0 ? 'Awaiting resolution at the provider' : 'Nothing outstanding'}
         alert={summary.failed > 0}
       />
-      <Tile label="Refunded this period" value={fmtMoney(summary.refunded)} sub="Money returned to retailers" />
     </div>
   );
 }

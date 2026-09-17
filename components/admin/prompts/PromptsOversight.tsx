@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import GenerationLogPanel from './GenerationLogPanel';
+import GenerationLogInline from './GenerationLogInline';
 import CompletenessBanner from './CompletenessBanner';
 import CategoryRail from './CategoryRail';
 import PromptSetSection from './PromptSetSection';
@@ -42,6 +44,7 @@ export default function PromptsOversight() {
 
   const [categories, setCategories] = useState<Category[]>(PROMPT_CATEGORIES);
   const [selectedId, setSelectedId] = useState<string | null>('ring');
+  const [logOpen, setLogOpen] = useState(false);
   const [dialog, setDialog] = useState<DialogState | null>(null);
   const [tab, setTab] = useState<PromptTab>('text');
   const [draft, setDraft] = useState('');
@@ -245,18 +248,30 @@ export default function PromptsOversight() {
   return (
     <>
       <main className="max-w-[1440px] mx-auto px-8 py-8 pb-24">
-        <header className="max-w-[900px]">
-          <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[var(--text)]">
-            Prompt management
-          </h1>
-          <p className="mt-1 text-[13px] leading-relaxed text-[var(--text-sec)]">
-            The instructions every render is generated from. An edit changes what every retailer
-            gets from the next generation onward.
-          </p>
-          <p className="mt-2 text-[12px] text-[var(--muted-text)]">
-            Every save creates a new version. A mistake here does not error — it simply produces
-            worse work.
-          </p>
+        <header className="max-w-[900px] flex items-start justify-between gap-6">
+          <div>
+            <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-[var(--text)]">
+              Prompt management
+            </h1>
+            <p className="mt-1 text-[13px] leading-relaxed text-[var(--text-sec)]">
+              The instructions every render is generated from. An edit changes what every retailer
+              gets from the next generation onward.
+            </p>
+            <p className="mt-2 text-[12px] text-[var(--muted-text)]">
+              Every save creates a new version. A mistake here does not error — it simply produces
+              worse work.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setLogOpen(true)}
+            className="mt-1 shrink-0 h-9 px-4 rounded-full border border-[var(--border-strong)] bg-[var(--surface)] text-[13px] font-medium text-[var(--text)] whitespace-nowrap transition-colors duration-150 hover:bg-[var(--muted)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--canvas)] flex items-center gap-2"
+          >
+            <span className="w-4 h-4 flex items-center justify-center">
+              <i className="ri-history-line text-[16px] text-[var(--text-sec)]" aria-hidden="true" />
+            </span>
+            Generation log
+          </button>
         </header>
 
         <div aria-live="polite" className="sr-only">
@@ -378,6 +393,12 @@ export default function PromptsOversight() {
       )}
 
       <PromptsStateControl state={preview} onChange={applyPreview} />
+
+      {logOpen && (
+        <GenerationLogPanel onClose={() => setLogOpen(false)}>
+          <GenerationLogInline />
+        </GenerationLogPanel>
+      )}
     </>
   );
 }

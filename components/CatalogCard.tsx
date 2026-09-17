@@ -7,7 +7,7 @@ export interface Catalog {
   name: string;
   productCount: number;
   status: 'Live' | 'Not published';
-  image?: string;
+  image: string;
 }
 
 interface Props {

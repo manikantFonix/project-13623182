@@ -30,8 +30,9 @@ export default function PlanMenu({
     };
   }, [open]);
 
-  const label = value === 'all' ? 'All plans' : PLANS[value].label;
-  const options: PlanFilter[] = ['all', ...planOrder];
+  const label =
+    value === 'all' ? 'All plans' : value === 'free-trial' ? 'Free Trial' : PLANS[value].label;
+  const options: PlanFilter[] = ['all', ...planOrder, 'free-trial'];
 
   return (
     <div className="flex items-center gap-2">
@@ -74,7 +75,13 @@ export default function PlanMenu({
                         : 'text-[var(--text-sec)] hover:bg-[var(--muted)] hover:text-[var(--text)]'
                     }`}
                   >
-                    <span>{option === 'all' ? 'All plans' : PLANS[option].label}</span>
+                    <span>
+                      {option === 'all'
+                        ? 'All plans'
+                        : option === 'free-trial'
+                          ? 'Free Trial'
+                          : PLANS[option].label}
+                    </span>
                     {active && (
                       <span className="w-4 h-4 flex items-center justify-center">
                         <i className="ri-check-line text-[15px]" aria-hidden="true" />

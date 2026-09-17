@@ -37,8 +37,12 @@ function Row({ retailer }: { retailer: Retailer }) {
         {retailer.plan ? (
           <span className="text-[var(--text)]">{PLANS[retailer.plan].label}</span>
         ) : (
-          <span className="text-[var(--muted-text)]">No plan</span>
+          <span className="text-[var(--text)]">Free Trial</span>
         )}
+      </td>
+
+      <td className="px-4 py-4 align-top text-[12px] tabular-nums whitespace-nowrap text-[var(--text-sec)]">
+        {retailer.nextBilling || <span className="text-[var(--muted-text)]">—</span>}
       </td>
 
       <td className="px-4 py-4 align-top text-[12px] tabular-nums whitespace-nowrap text-[var(--text-sec)]">
@@ -82,9 +86,9 @@ function Row({ retailer }: { retailer: Retailer }) {
 export default function RetailersTable({ retailers }: { retailers: Retailer[] }) {
   return (
     <div className="rounded-[12px] border border-[var(--border)] bg-[var(--surface)] overflow-x-auto">
-      <table className="w-full min-w-[1180px]">
+      <table className="w-full min-w-[1300px]">
         <caption className="sr-only">
-          Every retailer on the platform. Disabled accounts first, then zero balance, then by last
+          Every retailer on the platform. Inactive accounts first, then zero balance, then by last
           activity.
         </caption>
         <thead>
@@ -94,6 +98,7 @@ export default function RetailersTable({ retailers }: { retailers: Retailer[] })
             </th>
             <th scope="col" className={`${head} text-left`}>Status</th>
             <th scope="col" className={`${head} text-left`}>Plan</th>
+            <th scope="col" className={`${head} text-left`}>Next billing</th>
             <th scope="col" className={`${head} text-left`}>Signed up</th>
             <th scope="col" className={`${head} text-left`}>Last activity</th>
             <th scope="col" className={`${head} text-right`}>Catalogs</th>

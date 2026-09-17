@@ -20,7 +20,7 @@ export interface PlanTier {
 export const planTiers: PlanTier[] = [
   {
     id: 'studio',
-    name: 'Studio',
+    name: 'Starter',
     price: 149,
     facts: [
       { icon: 'ri-image-add-line', text: '300 renders a month' },
@@ -39,7 +39,7 @@ export const planTiers: PlanTier[] = [
   },
   {
     id: 'catalog',
-    name: 'Catalog',
+    name: 'Pro',
     price: 349,
     popular: true,
     facts: [
@@ -48,7 +48,7 @@ export const planTiers: PlanTier[] = [
       { icon: 'ri-store-2-line', text: 'Bespoke work and an online catalog' },
     ],
     features: [
-      'Everything in Studio',
+      'Everything in Starter',
       'Publish catalogs your customers can browse by link',
       'Take inquiries straight from your catalog',
       'See every inquiry in one inbox',
@@ -57,7 +57,7 @@ export const planTiers: PlanTier[] = [
   },
   {
     id: 'storefront',
-    name: 'Storefront',
+    name: 'Business',
     price: 749,
     facts: [
       { icon: 'ri-image-add-line', text: '3,500 renders a month' },
@@ -65,7 +65,7 @@ export const planTiers: PlanTier[] = [
       { icon: 'ri-global-line', text: 'Everything, including the tool on your own site' },
     ],
     features: [
-      'Everything in Catalog',
+      'Everything in Pro',
       'Put the design tool on your own website',
       'Visitors design a piece and ask you about it',
       'Instant price estimates for what they design',

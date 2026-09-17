@@ -21,9 +21,9 @@ const pageOptions: { value: UsageState; label: string }[] = [
 ];
 
 const planOptions: { value: UsageState; label: string }[] = [
-  { value: 'changePlanStudio', label: 'Change plan · Studio' },
-  { value: 'changePlanCatalog', label: 'Change plan · Catalog' },
-  { value: 'changePlanStorefront', label: 'Change plan · Storefront' },
+  { value: 'changePlanStudio', label: 'Change plan · Starter' },
+  { value: 'changePlanCatalog', label: 'Change plan · Pro' },
+  { value: 'changePlanStorefront', label: 'Change plan · Business' },
   { value: 'changePlanSent', label: 'Change plan · Request sent' },
   { value: 'changePlanFailed', label: 'Change plan · Request failed' },
   { value: 'changePlanNarrow', label: 'Change plan · Narrow' },

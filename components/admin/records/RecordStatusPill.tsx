@@ -5,6 +5,7 @@ import type { PillTone } from './data';
 const toneClass: Record<PillTone, string> = {
   neutral: 'bg-[var(--muted)] text-[var(--text-sec)]',
   success: 'bg-[var(--success-bg)] text-[var(--success)]',
+  alert: 'bg-[var(--amber-bg)] text-[var(--alert-strong)]',
 };
 
 export default function RecordStatusPill({

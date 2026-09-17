@@ -7,11 +7,7 @@ export function generateStaticParams() {
   return CATALOG_IDS.map((id) => ({ id }));
 }
 
-export default async function RenderStatusPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function RenderStatusPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   return (
     <AppShell>

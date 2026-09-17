@@ -120,7 +120,7 @@ export default function SignIn() {
               { value: 'default', label: 'Default' },
               { value: 'submitting', label: 'Submitting' },
               { value: 'refused', label: 'Credentials refused' },
-              { value: 'disabled', label: 'Disabled account' },
+              { value: 'disabled', label: 'Inactive account' },
               { value: 'expired', label: 'Session expired' },
               { value: 'shown', label: 'Password shown' },
             ],

@@ -11,7 +11,6 @@ export default function RequestSendCard({
   allDropped,
   submitting,
   canSend,
-  disabledReason,
   errorMessage,
 }: {
   token: string;

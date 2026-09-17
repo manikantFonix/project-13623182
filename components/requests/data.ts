@@ -1,5 +1,3 @@
-import type { Customer } from './customers';
-
 export type Status =
   | 'draft'
   | 'ready'
@@ -53,7 +51,7 @@ export interface Request {
   rejected?: boolean;
   quoteWaiting?: boolean;
   cancelled?: boolean;
-  customer?: Customer;
+  customer?: { name: string; phone: string; email: string };
   manufacturer?: { name: string; phone: string; email: string };
   linkState?: 'waiting' | 'expired' | 'used';
   decision?: Decision;

@@ -21,12 +21,12 @@ export default function AccountsSection({
         caption={`${fmt(accounts.newThisPeriod)} of them joined in ${periodLabel.toLowerCase()}.`}
       />
       <StatTile
-        label="Awaiting a plan"
+        label="Free Trial"
         value={fmt(accounts.awaiting)}
         caption="Verified but never subscribed."
       />
       <StatTile
-        label="Disabled"
+        label="Inactive"
         value={fmt(accounts.disabled)}
         caption="Catalog links offline, widget not serving."
       />

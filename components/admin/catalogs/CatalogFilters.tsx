@@ -1,17 +1,17 @@
 'use client';
 
-import FilterSegmented from './FilterSegmented';
+import FilterMenu from '../FilterMenu';
 import { focusRing } from '../tokens';
 import type { CatalogPublish, CatalogRender } from './data';
 
 const publishOptions: { value: CatalogPublish; label: string }[] = [
-  { value: 'all', label: 'All' },
+  { value: 'all', label: 'All states' },
   { value: 'published', label: 'Published' },
   { value: 'unpublished', label: 'Unpublished' },
 ];
 
 const renderOptions: { value: CatalogRender; label: string }[] = [
-  { value: 'all', label: 'All' },
+  { value: 'all', label: 'Any render' },
   { value: 'flagged', label: 'Has flagged' },
   { value: 'passed', label: 'All passed' },
 ];
@@ -54,8 +54,18 @@ export default function CatalogFilters({
         />
       </div>
 
-      <FilterSegmented label="State" options={publishOptions} value={publish} onChange={onPublish} />
-      <FilterSegmented label="Render" options={renderOptions} value={render} onChange={onRender} />
+      <FilterMenu
+        label="Filter by state"
+        value={publish}
+        options={publishOptions}
+        onChange={(value) => onPublish(value as CatalogPublish)}
+      />
+      <FilterMenu
+        label="Filter by render"
+        value={render}
+        options={renderOptions}
+        onChange={(value) => onRender(value as CatalogRender)}
+      />
 
       <p
         className="ml-auto text-[12px] tabular-nums text-[var(--text-sec)] whitespace-nowrap"
